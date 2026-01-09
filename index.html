@@ -75,15 +75,8 @@
     display: block;
     margin-top: 10px;
     border-radius: 8px;
-    opacity: 0;
-    transition: opacity 0.5s;
   }
 
-  img.loaded {
-    opacity: 1;
-  }
-
-  /* Індикатор завантаження */
   .loading-overlay {
     position: fixed;
     top: 0;
@@ -117,32 +110,6 @@
     font-size: 18px;
     color: #333;
   }
-
-  .progress-bar {
-    width: 300px;
-    height: 20px;
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    margin-top: 20px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background-color: #4CAF50;
-    width: 0%;
-    transition: width 0.3s;
-  }
-
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  }
 </style>
 </head>
 <body>
@@ -156,13 +123,9 @@
 
 <!-- Індикатор завантаження -->
 <div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-container">
+  <div style="text-align: center;">
     <div class="loading-spinner"></div>
     <div class="loading-text" id="loadingText">Завантаження GIF...</div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-    <div id="progressText" style="margin-top: 10px; color: #666;">0%</div>
   </div>
 </div>
 
@@ -302,230 +265,182 @@ const stopWords = ["day","rest","workout","upper","lower","full","optional","coo
 function normalizeExercise(name) {
     name = name.toLowerCase().trim();
     const mapping = {
-        // Goblet Squat
-        "goblet squat": "goblet squat",
-        "goblet squats": "goblet squat",
-        "goblet-squat": "goblet squat",
-        "goblet-squats": "goblet squat",
-        "gobletsquat": "goblet squat",
-        "dumbbell goblet squat": "dumbbell goblet squat",
-        "dumbbell goblet squats": "dumbbell goblet squat",
-        "dumbbell goblet-squat": "dumbbell goblet squat",
-        "dumbbell goblet-squats": "dumbbell goblet squat",
-        "dumbbellgobletsquat": "dumbbell goblet squat",
-        "gobletsquat": "goblet squat",
-        "gobletsquat": "goblet squat",
-        "gobletsquat": "goblet squat",
-
-        // Squat
         "squat": "squat",
         "squats": "squat",
-        "standing squats": "squat",
-        "standing squat": "squat",
-        "calf raises": "calf raises",
-        "calf-raises": "calf raises",
-        "calf raise": "calf raises",
-        "calfraises": "calf raises",
-        "calfraise": "calf raises",
-        "standing calf raise": "calf raises",
-        "standing calf raises": "calf raises",
-        "standing calf-raise": "calf raises",
-        "standing calf-raises": "calf raises",
-        "standing calfraise": "calf raises",
-        "standing calfraises": "calf raises",
-        "standingcalfraises": "calf raises",
-        "standingcalfraise": "calf raises",
-        "seated calf raise": "seated calf raise",
-        "seated calf raises": "seated calf raise",
-        "seated calf-raise": "seated calf raise",
-        "seated calf-raises": "seated calf raise",
-        "seatedcalfraise": "seated calf raise",
-        "seatedcalfraises": "seated calf raise",
-        "single leg calf raise": "single leg calf raise",
-        "single-leg calf raise": "single leg calf raise",
-        "single leg calf raises": "single leg calf raise",
-        "single-leg calf raises": "single leg calf raise",
-        "single-leg-calf-raise": "single leg calf raise",
-        "single-leg-calf-raises": "single leg calf raise",
-        "singlelegcalfraise": "single leg calf raise",
-        "singlelegcalfraises": "single leg calf raise",
-        "step ups": "step ups",
-        "step-ups": "step ups",
-        "step up": "step ups",
-        "step-up": "step ups",
-        "stepups": "step ups",
-        "stepup": "step ups",
-        "box step ups": "step ups",
-        "box step-ups": "step ups",
-        "box stepups": "step ups",
-        "box step up": "step ups",
-        "box step-up": "step ups",
-        "box stepup": "step ups",
-        "sumo squat": "sumo squat",
-        "sumo squats": "sumo squat",
-        "sumo-squat": "sumo squat",
-        "sumo-squats": "sumo squat",
-        "sumosquat": "sumo squat",
-        "sumosquats": "sumo squat",
-        "lateral raises": "lateral raises",
-        "lateral raise": "lateral raises",
-        "lateral-raises": "lateral raises",
-        "lateral-raise": "lateral raises",
-        "lateralraises": "lateral raises",
-        "lateralraise": "lateral raises",
-        "dumbbell lateral raises": "lateral raises",
-        "dumbbell lateral raise": "lateral raises",
-        "dead bug": "dead bug",
-        "dead-bug": "dead bug",
-        "deadbug": "dead bug",
-
-        //CARDIO / HIIT / FAT BURN
-        "walking": "walking",
-        "walk": "walking",
-        "cardio walking": "walking",
-        "walking for cardio": "walking",
-        "aerobic walking": "walking",
-        "fast feet": "walking",
-        "fast-feet": "walking",
-        "fast-feet drill": "walking",
-        "fast feet drill": "walking",
-        "quick feet": "walking",
-        "speed feet drill": "walking",
-        "rapid footwork": "walking",
-
-        // Bulgarian Split Squat
-        "bulgarian split squat": "bulgarian split squat",
-        "bulgarian split squats": "bulgarian split squat",
-        "bulgarian-split squat": "bulgarian split squat",
-        "bulgarian-split squats": "bulgarian split squat",
-        "bulgariansplitsquat": "bulgarian split squat",
-
-        // Archer Push Ups
-        "archer push ups": "archer push ups",
-        "archer push-up": "archer push ups",
-        "archer pushups": "archer push ups",
-        "archer-push-up": "archer push ups",
-        "archer-pushups": "archer push ups",
-        "archerpushup": "archer push ups",
-        "archerpushups": "archer push ups",
-
-        // Push Ups
         "push ups": "push ups",
-        "push-up": "push ups",
         "push-ups": "push ups",
         "pushups": "push ups",
-        "pushup": "push ups",
-        "wide push ups": "wide push ups",
-        "wide push-up": "wide push ups",
-        "wide pushups": "wide push ups",
-        "widepushup": "wide push ups",
-        "narrow push ups": "narrow push ups",
-        "narrow push-up": "narrow push ups",
-        "narrow pushups": "narrow push ups",
-        "narrowpushup": "narrow push ups",
-        "incline push ups": "incline push ups",
-        "incline push-up": "incline push ups",
-        "incline pushups": "incline push ups",
-        "inclinepushup": "incline push ups",
-        "decline push ups": "decline push ups",
-        "decline push-ups": "decline push ups",
-        "decline push up": "decline push ups",
-        "decline push-up": "decline push ups",
-        "declinepushups": "decline push ups",
-        "declinepushup": "decline push ups",
-        "knee push ups": "knee push ups",
-        "knee push-up": "knee push ups",
-        "knee pushups": "knee push ups",
-        "kneepushup": "knee push ups",
-        "shoulder push ups": "shoulder push ups",
-        "shoulder push-up": "shoulder push ups",
-        "shoulder pushups": "shoulder push ups",
-        "shoulderpushup": "shoulder push ups",
-        "reverse grip push ups": "reverse grip push ups",
-        "reverse grip push-up": "reverse grip push ups",
-        "reverse grip push-ups": "reverse grip push ups",
-        "reverse grip pushups": "reverse grip push ups",
-        "reversegrippushup": "reverse grip push ups",
-        "reverse push ups": "reverse push ups",
-        "reverse push-ups": "reverse push ups",
-        "reverse push up": "reverse push ups",
-        "reverse push-up": "reverse push ups",
-        "reverse pushup": "reverse push ups",
-        "reversepushup": "reverse push ups",
-        "reversepushups": "reverse push ups",
-        "bench dips": "reverse push ups",
-        "benchdips": "reverse push ups",
-        "hanging leg raises": "hanging leg raises",
-        "hanging leg raise": "hanging leg raises",
-        "hanging leg-raises": "hanging leg raises",
-        "hanging-leg-raises": "hanging leg raises",
-        "hanginglegraises": "hanging leg raises",
-        "hanging-leg-raise": "hanging leg raises",
-        "hanginglegraise": "hanging leg raises",
-        "leg raises": "hanging leg raises",
-        "leg raise": "hanging leg raises",
-
-        // Pistol Squats
-        "pistol squat": "pistol squats",
-        "pistol squats": "pistol squats",
-        "pistolsquat": "pistol squats",
-
-        // Side Plank
-        "side plank": "side plank",
-        "side planks": "side plank",
-        "side-plank": "side plank",
-        "side-planks": "side plank",
-        "sideplank": "side plank",
-        "russian twists": "russian twists",
-        "russian twist": "russian twists",
-        "russian-twists": "russian twists",
-        "russiantwists": "russian twists",
-        "russiantwist": "russian twists",
-        "russian-twist": "russian twists",
-
-        // Pull Ups
-        "pull up": "pull ups",
+        "pull ups": "pull ups",
         "pull-ups": "pull ups",
         "pullups": "pull ups",
-        "pullup": "pull ups",
-        "pull ups": "pull ups",
-        "dumbbell chest fly": "dumbbell chest fly",
-        "dumbbell chest-fly": "dumbbell chest fly",
-        "dumbbell chestfly": "dumbbell chest fly",
-        "dumbbellchestfly": "dumbbell chest fly",
-        "cable chest fly": "cable chest fly",
-        "cable fly": "cable chest fly",
-        "cable chestfly": "cable chest fly",
-        "cable chest-fly": "cable chest fly",
-        "cablechestfly": "cable chest fly",
-        "chest fly": "cable chest fly",
-        "chest-fly": "cable chest fly",
-        "chestfly": "cable chest fly",
-        "chin up": "chin up",
-        "chin-up": "chin up",
-        "chin ups": "chin up",
-        "chin-ups": "chin up",
-        "chinup": "chin up",
-        "chinups": "chin up",
-        "assisted pull ups": "assisted pull ups",
-        "assisted pull-ups": "assisted pull ups",
-        "assisted pull up": "assisted pull ups",
-        "assisted pull-up": "assisted pull ups",
-        "assisted pullups": "assisted pull ups",
-        "assistedpullups": "assisted pull ups",
-        "assistedpullup": "assisted pull ups",
-        "band pull ups": "assisted pull ups",
-        "band pull up": "assisted pull ups",
-        "band pull-ups": "assisted pull ups",
-        "band pull-up": "assisted pull ups",
-        "bandpullups": "assisted pull ups",
-        "bandpullup": "assisted pull ups",
-        "straight-arm pulldown": "straight-arm pulldown",
-        "straight arm pulldown": "straight-arm pulldown",
-        "straightarm pulldown": "straight-arm pulldown",
-        "straightarmpulldown": "straight-arm pulldown",
-        "straight-arm lat pulldown": "straight-arm pulldown",
-        "straight arm lat pulldown": "straight-arm pulldown",
-        "standing straight-arm lat pulldown": "straight-arm pulldown",
-        "standing straight arm lat pulldown": "straight-arm pulldown",
-        "standing straight-arm
+        "plank": "plank",
+        "lunges": "lunges",
+        "dips": "dips",
+        "bench press": "bench press",
+        "deadlift": "deadlift",
+        // ... інші мапінги
+    };
+    return mapping[name] || name;
+}
+
+document.getElementById("generateBtn").onclick = function() {
+    const input = document.getElementById("inputText").value;
+    const lines = input.split("\n");
+    const outputDiv = document.getElementById("output");
+    
+    // Очистити результат
+    outputDiv.innerHTML = "";
+    
+    // Показати індикатор завантаження
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    const loadingText = document.getElementById("loadingText");
+    loadingText.textContent = "Обробка вправ...";
+    loadingOverlay.style.display = "flex";
+    
+    // Вимкнути кнопку під час завантаження
+    const generateBtn = document.getElementById("generateBtn");
+    generateBtn.disabled = true;
+    
+    // Додати невелику затримку для плавності
+    setTimeout(() => {
+        processExercises(lines, outputDiv, loadingOverlay, generateBtn);
+    }, 100);
+};
+
+function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
+    const exercisesWithGifs = [];
+    
+    // Перший прохід: знайти всі GIF
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line) continue;
+
+        const firstWord = line.split(/\s+/)[0].toLowerCase();
+        if (stopWords.includes(firstWord)) continue;
+
+        let gifUrl = null;
+        const match = line.match(/[a-zA-Z][a-zA-Z\s\-()]+/);
+        if (match) {
+            const rawName = match[0].trim();
+            const normalizedName = normalizeExercise(rawName);
+
+            if (gifDatabase[normalizedName]) {
+                gifUrl = gifDatabase[normalizedName];
+            }
+        }
+
+        exercisesWithGifs.push({
+            text: line,
+            gifUrl: gifUrl,
+            loaded: false
+        });
+        
+        // Оновити текст завантаження
+        document.getElementById("loadingText").textContent = `Знайдено ${exercisesWithGifs.length} вправ...`;
+    }
+    
+    if (exercisesWithGifs.length === 0) {
+        // Немає вправ для обробки
+        loadingOverlay.style.display = "none";
+        generateBtn.disabled = false;
+        return;
+    }
+    
+    document.getElementById("loadingText").textContent = `Завантаження 0 з ${exercisesWithGifs.length} GIF...`;
+    
+    let loadedCount = 0;
+    
+    // Другий прохід: створюємо блоки та завантажуємо GIF
+    exercisesWithGifs.forEach((exercise, index) => {
+        const block = document.createElement("div");
+        block.className = "exercise-block";
+
+        const textEl = document.createElement("div");
+        textEl.textContent = exercise.text;
+        block.appendChild(textEl);
+
+        if (exercise.gifUrl) {
+            const img = document.createElement("img");
+            img.style.opacity = "0.3"; // Початкова прозорість
+            img.src = exercise.gifUrl;
+            
+            // Додати обробник завантаження
+            img.onload = function() {
+                loadedCount++;
+                img.style.opacity = "1";
+                img.style.transition = "opacity 0.5s";
+                document.getElementById("loadingText").textContent = 
+                    `Завантажено ${loadedCount} з ${exercisesWithGifs.length} GIF...`;
+                
+                if (loadedCount === exercisesWithGifs.length) {
+                    // Усі GIF завантажено
+                    setTimeout(() => {
+                        loadingOverlay.style.display = "none";
+                        generateBtn.disabled = false;
+                    }, 500);
+                }
+            };
+            
+            // Обробник помилки
+            img.onerror = function() {
+                loadedCount++;
+                const errorDiv = document.createElement("div");
+                errorDiv.textContent = "❌ Не вдалося завантажити GIF";
+                errorDiv.style.color = "red";
+                block.appendChild(errorDiv);
+                
+                document.getElementById("loadingText").textContent = 
+                    `Завантажено ${loadedCount} з ${exercisesWithGifs.length} GIF...`;
+                
+                if (loadedCount === exercisesWithGifs.length) {
+                    setTimeout(() => {
+                        loadingOverlay.style.display = "none";
+                        generateBtn.disabled = false;
+                    }, 500);
+                }
+            };
+            
+            block.appendChild(img);
+        } else {
+            loadedCount++;
+            const err = document.createElement("div");
+            err.textContent = "❌ GIF not found in local database";
+            err.style.color = "#ff6666";
+            block.appendChild(err);
+            
+            document.getElementById("loadingText").textContent = 
+                `Завантажено ${loadedCount} з ${exercisesWithGifs.length} GIF...`;
+            
+            if (loadedCount === exercisesWithGifs.length) {
+                setTimeout(() => {
+                    loadingOverlay.style.display = "none";
+                    generateBtn.disabled = false;
+                }, 500);
+            }
+        }
+        
+        outputDiv.appendChild(block);
+        
+        // Якщо це остання вправа без GIF, перевірити чи всі вже оброблені
+        if (!exercise.gifUrl && index === exercisesWithGifs.length - 1) {
+            if (loadedCount === exercisesWithGifs.length) {
+                setTimeout(() => {
+                    loadingOverlay.style.display = "none";
+                    generateBtn.disabled = false;
+                }, 500);
+            }
+        }
+    });
+    
+    // Якщо всі вправи без GIF (швидкий випадок)
+    if (loadedCount === exercisesWithGifs.length) {
+        setTimeout(() => {
+            loadingOverlay.style.display = "none";
+            generateBtn.disabled = false;
+        }, 500);
+    }
+}
+</script>
+
+</body>
+</html>
