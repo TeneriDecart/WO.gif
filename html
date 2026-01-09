@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Uniwell Workout GIF Generator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #d0f0ff;
+    color: #000;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+  }
+
+  h1 {
+    color: orange;
+    font-size: 40px;
+    text-align: center;
+    margin-bottom: 5px;
+  }
+
+  p.description {
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  textarea {
+    width: 100%;
+    height: 200px;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #aaa;
+    resize: vertical;
+  }
+
+  button {
+    padding: 12px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #ff9900;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #e68a00;
+  }
+
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
+  .exercise-block {
+    background: #ffffff;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  }
+
+  img {
+    max-width: 300px;
+    display: block;
+    margin-top: 10px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+
+  img.loaded {
+    opacity: 1;
+  }
+
+  /* Індикатор завантаження */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .loading-spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #ff9900;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+  }
+
+  .progress-bar {
+    width: 300px;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background-color: #4CAF50;
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+</style>
+</head>
+<body>
+
+<h1>Uniwell</h1>
+<p class="description">Ця програмка генерує план тренування з GIF-демонстраціями вправ. Просто введіть свій список вправ нижче і натисніть "Generate GIF plan".</p>
+
+<textarea id="inputText" placeholder="Наприклад: Day 1 - Archer push ups – 3x8&#10;2. Pull ups – 3x8"></textarea>
+<br>
+<button id="generateBtn">Generate GIF plan</button>
+
+<!-- Індикатор завантаження -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Завантаження GIF...</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div id="progressText" style="margin-top: 10px; color: #666;">0%</div>
+  </div>
+</div>
+
+<h3>Результат:</h3>
+<div id="output"></div>
+
+<script>
+// Локальна база для складних/унікальних вправ
+var gifDatabase = {
+    "goblet squat": "https://www.inspireusafoundation.org/file/2023/08/kettlebell-goblet-squat-muscles.gif",
+    "squat": "https://www.inspireusafoundation.org/file/2021/06/bodyweight-squat.gif",
+    "bulgarian split squat": "https://www.inspireusafoundation.org/file/2022/03/bulgarian-split-spuat.gif",
+    "archer push ups": "https://www.inspireusafoundation.org/file/2022/08/archer-push-up.gif",
+    "push ups": "https://www.inspireusafoundation.org/file/2022/11/push-up.gif",
+    "pistol squats": "https://www.inspireusafoundation.org/file/2022/09/pistol-squat-muscles.gif",
+    "side plank": "https://www.inspireusafoundation.org/wp-content/uploads/2023/10/side-plank-muscles.gif",
+    "pull ups": "https://www.inspireusafoundation.org/file/2022/11/pull-up.gif",
+    "plank": "https://fitliferegime.com/wp-content/uploads/2021/10/Forearm-Plank.webp",
+    "lunges": "https://www.inspireusafoundation.org/file/2023/07/bodyweight-forward-lunge.gif",
+    "dips": "https://www.inspireusafoundation.org/file/2024/02/parallel-bar-tricep-dips.gif",
+    "mountain climbers": "https://www.inspireusafoundation.org/file/2022/11/mountain-climbers.gif",
+    "bicycle crunches": "https://www.inspireusafoundation.org/file/2023/08/bicycle-crunch-movement.gif",
+    "burpees": "https://www.inspireusafoundation.org/file/2022/01/burpee-movement.gif",
+    "bent-over dumbbell rows": "https://www.inspireusafoundation.org/file/2022/11/dumbbell-row.gif",
+    "dumbbell upright rows": "https://www.inspireusafoundation.org/file/2024/02/dumbbell-upright-row.gif",
+    "dumbbell shrugs": "https://www.inspireusafoundation.org/file/2021/11/dumbbell-shrug.gif",
+    "dumbbell bicep curls": "https://www.inspireusafoundation.org/file/2022/03/dumbbell-bicep-curl.gif",
+    "bench dips": "https://www.inspireusafoundation.org/file/2024/01/bench-dip.gif",
+    "reverse grip push ups": "https://www.inspireusafoundation.org/file/2023/04/reverse-grip-push-ups.gif",
+    "bench press": "https://www.inspireusafoundation.org/file/2022/05/barbell-pause-bench.gif",
+    "wall crunches": "https://www.inspireusafoundation.org/file/2023/08/wall-crunch.gif",
+    "elbow-to-nee crunches": "https://www.inspireusafoundation.org/file/2023/08/elbow-to-knee-sit-up-movement.gif",
+    "lying leg raises": "https://www.inspireusafoundation.org/file/2022/06/lying-leg-raise.gif",
+    "shoulder push ups": "https://www.inspireusafoundation.org/file/2023/10/shoulder-push-up.gif",
+    "hip thrust": "https://www.inspireusafoundation.org/file/2023/08/bodyweight-hip-thrust.gif",
+    "single-leg hip thrust": "https://www.inspireusafoundation.org/file/2023/08/single-leg-hip-thrust-muscles.gif",
+    "dumbbell pullovers": "https://www.inspireusafoundation.org/file/2022/11/dumbbell-pullover.gif",
+    "barbell pullover": "https://www.inspireusafoundation.org/file/2023/07/barbell-pullover.gif",
+    "deadlift": "https://www.inspireusafoundation.org/file/2022/02/barbell-deadlift-movement.gif",
+    "front squat": "https://www.inspireusafoundation.org/file/2023/06/front-squat-clean-grip.gif",
+    "incline push ups": "https://www.inspireusafoundation.org/file/2023/03/incline-push-up.gif",
+    "knee push ups": "https://www.inspireusafoundation.org/file/2023/04/knee-push-ups.gif",
+    "wide push ups": "https://www.inspireusafoundation.org/file/2022/11/wide-arm-push-ups.gif",
+    "narrow push ups": "https://www.inspireusafoundation.org/file/2021/08/diamond-pushup.gif",
+    "alternate heel touches": "https://www.inspireusafoundation.org/file/2022/12/alternate-heel-touchers.gif",
+    "barbell row": "https://www.inspireusafoundation.org/file/2022/08/barbell-bent-over-row.gif",
+    "lat pulldown": "https://www.inspireusafoundation.org/file/2022/08/wide-grip-lat-pulldown.gif",
+    "seated row": "https://www.inspireusafoundation.org/file/2022/08/cable-seated-row.gif",
+    "leg press": "https://media.tenor.com/xJh_-w_SxckAAAAM/leg-press.gif",
+    "barbell squats": "https://www.inspireusafoundation.org/file/2022/03/barbell-full-squat.gif",
+    "leg extension": "https://www.inspireusafoundation.org/file/2021/06/leg-extension-machine.gif",
+    "box squats": "https://www.inspireusafoundation.org/file/2022/05/box-squat-muscles-used.gif",
+    "incline bench press": "https://newlife.com.cy/wp-content/uploads/2019/11/00471301-Barbell-Incline-Bench-Press_Chest_360.gif",
+    "hammer curl": "https://www.inspireusafoundation.org/file/2022/04/dumbbell-hammer-curl.gif",
+    "dumbbell romanian deadlift": "https://www.inspireusafoundation.org/file/2021/11/dumbbell-romanian-deadlift.gif",
+    "back extension": "https://www.inspireusafoundation.org/file/2022/05/back-extension.gif",
+    "romanian deadlift": "https://www.inspireusafoundation.org/file/2022/06/barbell-romanian-deadlift-movement.gif",
+    "inverted row": "https://www.inspireusafoundation.org/file/2022/03/inverted-row.gif",
+    "reverse push ups": "https://www.inspireusafoundation.org/file/2024/01/bench-dip.gif",
+    "hollow hold": "https://www.docteur-fitness.com/wp-content/uploads/2022/04/hollow-hold.gif",
+    "dumbbell deadlift": "https://www.inspireusafoundation.org/file/2022/02/dumbbell-deadlift-movement.gif",
+    "seated dumbbell shoulder press": "https://pumpx.app/wp-content/uploads/2025/05/04051305-Dumbbell-Seated-Shoulder-Press_Shoulders_720.gif",
+    "russian twists": "https://www.kettlebellkings.com/cdn/shop/articles/russian-twist_cf5b5524-a334-4364-9cb9-54b5a04962d9_1200x1200_crop_center.gif",
+    "dumbbell goblet squat": "https://www.inspireusafoundation.org/file/2023/08/dumbbell-goblet-squat-muscles.gif",
+    "calf raises": "https://thegymfaction.com/Exercise/20250121151109.gif",
+    "step ups": "https://www.kettlebellkings.com/cdn/shop/articles/weighted-step-up.gif",
+    "sumo squat": "https://www.inspireusafoundation.org/file/2023/08/sumo-air-squat.gif",
+    "face pulls": "https://www.inspireusafoundation.org/file/2023/01/banded-face-pull.gif",
+    "single-arm dumbbell row": "https://i.pinimg.com/originals/86/02/f6/8602f61f6089c5a01c042626176381f9.gif",
+    "dumbbell chest fly":  "https://newlife.com.cy/wp-content/uploads/2019/11/03081301-Dumbbell-Fly_Chest-FIX_360.gif",
+    "cable chest fly": "https://www.inspireusafoundation.org/wp-content/uploads/2023/08/cable-fly.gif",
+    "lateral raises": "https://newlife.com.cy/wp-content/uploads/2019/11/22341301-Dumbbell-Standing-Lateral-Raise-female_Shoulders_360.gif",
+    "dead bug": "https://louismove.com/wp-content/uploads/2022/12/02761301-Dead-Bug_Waist-FIX_720.gif",
+    "hanging leg raises": "https://fitnessprogramer.com/wp-content/uploads/2021/02/Hanging-Knee-Raises.gif",
+    "jump squat": "https://homeworkouts.org/wp-content/uploads/anim-jump-squats.gif",
+    "pulse squat": "https://workout-temple.com/wp-content/uploads/2022/12/Squat-Pulses-1024x500.jpg",
+    "reverse lunge": "https://homeworkouts.org/wp-content/uploads/anim-reverse-lunges.gif",
+    "walking lunge": "https://www.inspireusafoundation.org/file/2023/08/bodyweight-walking-lunge-movement.gif",
+    "curtsy lunge": "https://www.inspireusafoundation.org/file/2023/08/curtsy-lunge.gif",
+    "lateral lunge": "https://www.inspireusafoundation.org/file/2023/08/side-lunge.gif",
+    "static lunge": "https://www.inspireusafoundation.org/file/2023/08/split-squat.gif",
+    "kettlebell swing": "https://www.docteur-fitness.com/wp-content/uploads/2021/12/kettlebell-swing.gif",
+    "leg curl": "https://thegymfaction.com/Exercise/20250705152123.gif",
+    "nordic hamstring curl": "https://www.kettlebellkings.com/cdn/shop/articles/nordic_curls.gif?v=1699444790",
+    "seated calf raise": "https://www.inspireusafoundation.org/file/2022/11/seated-calf-raise.gif",
+    "single leg calf raise": "https://www.inspireusafoundation.org/wp-content/uploads/2021/06/single-leg-standing-calf-raise.gif",
+    "decline push ups": "https://www.inspireusafoundation.org/file/2022/07/decline-push-up.gif",
+    "shoulder press": "https://www.inspireusafoundation.org/file/2022/10/seated-overhead-press.gif",
+    "overhead press": "https://www.kettlebellkings.com/cdn/shop/articles/Standing-Barbell-Military-Press.gif",
+    "arnold press": "https://pumpx.app/wp-content/uploads/2025/05/21371305-Dumbbell-Arnold-Press_Shoulders_720.gif",
+    "front raise": "https://fitcron.com/wp-content/uploads/2021/04/03101301-Dumbbell-Front-Raise_Shoulders_720.gif",
+    "rear delt fly": "https://fitliferegime.com/wp-content/uploads/2023/07/Incline-Bench-Rear-Delt-Dumbbell-fly.gif",
+    "upright row": "https://miro.medium.com/v2/resize:fit:864/1*b65d0PhFVK-JQsCqXG2K9g.gif",
+    "dumbbell bench press": "https://thegymfaction.com/Exercise/20250811181856.gif",
+    "overhead triceps extension": "https://fitliferegime.com/wp-content/uploads/2023/10/One-Arm-Seated-Dumbbell-Tricep-Extension.gif",
+    "triceps kickback": "https://www.inspireusafoundation.org/file/2022/03/dumbbell-tricep-kickback.gif",
+    "skull crushers": "https://newlife.com.cy/wp-content/uploads/2019/11/00611301-Barbell-Lying-Triceps-Extension_Upper-Arms_360.gif",
+    "chin up": "https://cdn.shopify.com/s/files/1/0250/0362/2496/files/60000.gif",
+    "assisted pull ups": "https://www.inspireusafoundation.org/file/2023/05/band-assisted-pull-up.gif",
+    "straight-arm pulldown": "https://www.inspireusafoundation.org/file/2024/01/rope-straight-arm-pulldown.gif",
+    "concentration curl": "https://www.inspireusafoundation.org/file/2022/01/concentration-curl-2048x942.png",
+    "preacher curl": "https://www.inspireusafoundation.org/file/2022/03/ez-bar-preacher-curl.gif",
+    "alternating dumbbell curl": "https://images.squarespace-cdn.com/content/v1/5ffcea9416aee143500ea103/1638182745756-76IEDNY3Y86WV546E1IS/Standing%2BAlternate%2BDumbbell%2BBiceps%2BCurls.png",
+    "bird dog": "https://www.docteur-fitness.com/wp-content/uploads/2022/04/bird-dog.gif",
+    "flutter kicks": "https://www.burnthefatinnercircle.com/members/images/1891b.jpg",
+    "side crunch": "https://homeworkouts.org/wp-content/uploads/anim-oblique-crunches.gif",
+    "woodchoppers": "https://fitliferegime.com/wp-content/uploads/2023/08/Dumbbell-Wood-Chop.gif",
+    "standing oblique crunch": "https://fitliferegime.com/wp-content/uploads/2024/01/Standing-Dumbbell-Oblique-Crunch.gif",
+    "reverse crunch": "https://thegymfaction.com/Exercise/20250117181836.gif",
+    "wall sit": "https://pump-app.s3.eu-west-2.amazonaws.com/exercise-assets/07341101-Sit-(wall)_Thighs_small.jpg",
+    "crunches": "https://www.inspireusafoundation.org/wp-content/uploads/2022/01/crunch.gif",
+    "walking": "https://liftmanual.com/wp-content/uploads/2023/04/walking.gif",
+    "fast feet": "https://liftmanual.com/wp-content/uploads/2023/04/quick-feet.gif",
+    "decline barbell bench press": "https://newlife.com.cy/wp-content/uploads/2019/11/00331301-Barbell-Decline-Bench-Press_Chest_360.gif",
+    "barbell curl": "https://www.inspireusafoundation.org/file/2023/02/ez-bar-bicep-curl.gif",
+    "incline dumbbell curl": "https://www.inspireusafoundation.org/file/2022/10/incline-dumbbell-curl.gif",
+    "rope pushdowns": "https://www.inspireusafoundation.org/wp-content/uploads/2021/10/cable-tricep-pushdown.gif",
+    "weighted dips": "https://pump-app.s3.eu-west-2.amazonaws.com/exercise-assets/17551101-Weighted-Tricep-Dips_Upper-Arms_small.jpg",
+    "band squat": "https://www.inspireusafoundation.org/wp-content/uploads/2022/10/resistance-band-squat.gif",
+    "band row": "https://fitliferegime.com/wp-content/uploads/2023/08/Resistance-Band-Bent-Over-Row.gif",
+    "band pull-apart": "https://www.inspireusafoundation.org/file/2022/08/band-pull-apart.gif",
+    "band glute kickback": "https://www.liftosaur.com/externalimages/exercises/full/large/glutekickback_band_full_large.png",
+    "standing dumbbell shoulder press": "https://fitliferegime.com/wp-content/uploads/2021/12/Standing-Overhead-Dumbbell-Shoulder-Press.jpg",
+    "resistance band seated row": "https://static.wixstatic.com/media/7d8624_ed103babfa4b48578f360bd1fb685d98~mv2.gif",
+    "standing side leg raises": "https://i0.wp.com/post.healthline.com/wp-content/uploads/2019/07/Standing-side-leg-raises.gif",
+    "dumbbell bent-over row": "https://fitnessprogramer.com/wp-content/uploads/2021/02/Bent-Over-Dumbbell-Row.gif",
+    "hamstring stretch": "https://i.postimg.cc/jjwvj6K6/Hamstring-Stretch.gif",
+    "quad stretch": "https://i.postimg.cc/gr9bMydv/Quadriceps-Stretch-(Standing).gif",
+    "hip flexor stretch": "https://i.postimg.cc/XvgF4xz6/10531101-Kneeling-Hip-Flexor-Stretch-Hips-small.png",
+    "kettlebell clean": "https://homeworkouts.org/wp-content/uploads/anim-kettlebell-one-arm-clean-and-jerk.gif",
+};
+
+// Стоп-слова на початку рядка
+const stopWords = ["day","rest","workout","upper","lower","full","optional","cool","down","stretch","monday","tuesday","wednesday","thursday","friday","saturday","sunday", "arms", "calves", "core", "conditioning", "shoulders", "triceps", "back", "biceps"];
+
+// Функція нормалізації назв вправ
+function normalizeExercise(name) {
+    name = name.toLowerCase().trim();
+    const mapping = {
+        // Goblet Squat
+        "goblet squat": "goblet squat",
+        "goblet squats": "goblet squat",
+        "goblet-squat": "goblet squat",
+        "goblet-squats": "goblet squat",
+        "gobletsquat": "goblet squat",
+        "dumbbell goblet squat": "dumbbell goblet squat",
+        "dumbbell goblet squats": "dumbbell goblet squat",
+        "dumbbell goblet-squat": "dumbbell goblet squat",
+        "dumbbell goblet-squats": "dumbbell goblet squat",
+        "dumbbellgobletsquat": "dumbbell goblet squat",
+        "gobletsquat": "goblet squat",
+        "gobletsquat": "goblet squat",
+        "gobletsquat": "goblet squat",
+
+        // Squat
+        "squat": "squat",
+        "squats": "squat",
+        "standing squats": "squat",
+        "standing squat": "squat",
+        "calf raises": "calf raises",
+        "calf-raises": "calf raises",
+        "calf raise": "calf raises",
+        "calfraises": "calf raises",
+        "calfraise": "calf raises",
+        "standing calf raise": "calf raises",
+        "standing calf raises": "calf raises",
+        "standing calf-raise": "calf raises",
+        "standing calf-raises": "calf raises",
+        "standing calfraise": "calf raises",
+        "standing calfraises": "calf raises",
+        "standingcalfraises": "calf raises",
+        "standingcalfraise": "calf raises",
+        "seated calf raise": "seated calf raise",
+        "seated calf raises": "seated calf raise",
+        "seated calf-raise": "seated calf raise",
+        "seated calf-raises": "seated calf raise",
+        "seatedcalfraise": "seated calf raise",
+        "seatedcalfraises": "seated calf raise",
+        "single leg calf raise": "single leg calf raise",
+        "single-leg calf raise": "single leg calf raise",
+        "single leg calf raises": "single leg calf raise",
+        "single-leg calf raises": "single leg calf raise",
+        "single-leg-calf-raise": "single leg calf raise",
+        "single-leg-calf-raises": "single leg calf raise",
+        "singlelegcalfraise": "single leg calf raise",
+        "singlelegcalfraises": "single leg calf raise",
+        "step ups": "step ups",
+        "step-ups": "step ups",
+        "step up": "step ups",
+        "step-up": "step ups",
+        "stepups": "step ups",
+        "stepup": "step ups",
+        "box step ups": "step ups",
+        "box step-ups": "step ups",
+        "box stepups": "step ups",
+        "box step up": "step ups",
+        "box step-up": "step ups",
+        "box stepup": "step ups",
+        "sumo squat": "sumo squat",
+        "sumo squats": "sumo squat",
+        "sumo-squat": "sumo squat",
+        "sumo-squats": "sumo squat",
+        "sumosquat": "sumo squat",
+        "sumosquats": "sumo squat",
+        "lateral raises": "lateral raises",
+        "lateral raise": "lateral raises",
+        "lateral-raises": "lateral raises",
+        "lateral-raise": "lateral raises",
+        "lateralraises": "lateral raises",
+        "lateralraise": "lateral raises",
+        "dumbbell lateral raises": "lateral raises",
+        "dumbbell lateral raise": "lateral raises",
+        "dead bug": "dead bug",
+        "dead-bug": "dead bug",
+        "deadbug": "dead bug",
+
+        //CARDIO / HIIT / FAT BURN
+        "walking": "walking",
+        "walk": "walking",
+        "cardio walking": "walking",
+        "walking for cardio": "walking",
+        "aerobic walking": "walking",
+        "fast feet": "walking",
+        "fast-feet": "walking",
+        "fast-feet drill": "walking",
+        "fast feet drill": "walking",
+        "quick feet": "walking",
+        "speed feet drill": "walking",
+        "rapid footwork": "walking",
+
+        // Bulgarian Split Squat
+        "bulgarian split squat": "bulgarian split squat",
+        "bulgarian split squats": "bulgarian split squat",
+        "bulgarian-split squat": "bulgarian split squat",
+        "bulgarian-split squats": "bulgarian split squat",
+        "bulgariansplitsquat": "bulgarian split squat",
+
+        // Archer Push Ups
+        "archer push ups": "archer push ups",
+        "archer push-up": "archer push ups",
+        "archer pushups": "archer push ups",
+        "archer-push-up": "archer push ups",
+        "archer-pushups": "archer push ups",
+        "archerpushup": "archer push ups",
+        "archerpushups": "archer push ups",
+
+        // Push Ups
+        "push ups": "push ups",
+        "push-up": "push ups",
+        "push-ups": "push ups",
+        "pushups": "push ups",
+        "pushup": "push ups",
+        "wide push ups": "wide push ups",
+        "wide push-up": "wide push ups",
+        "wide pushups": "wide push ups",
+        "widepushup": "wide push ups",
+        "narrow push ups": "narrow push ups",
+        "narrow push-up": "narrow push ups",
+        "narrow pushups": "narrow push ups",
+        "narrowpushup": "narrow push ups",
+        "incline push ups": "incline push ups",
+        "incline push-up": "incline push ups",
+        "incline pushups": "incline push ups",
+        "inclinepushup": "incline push ups",
+        "decline push ups": "decline push ups",
+        "decline push-ups": "decline push ups",
+        "decline push up": "decline push ups",
+        "decline push-up": "decline push ups",
+        "declinepushups": "decline push ups",
+        "declinepushup": "decline push ups",
+        "knee push ups": "knee push ups",
+        "knee push-up": "knee push ups",
+        "knee pushups": "knee push ups",
+        "kneepushup": "knee push ups",
+        "shoulder push ups": "shoulder push ups",
+        "shoulder push-up": "shoulder push ups",
+        "shoulder pushups": "shoulder push ups",
+        "shoulderpushup": "shoulder push ups",
+        "reverse grip push ups": "reverse grip push ups",
+        "reverse grip push-up": "reverse grip push ups",
+        "reverse grip push-ups": "reverse grip push ups",
+        "reverse grip pushups": "reverse grip push ups",
+        "reversegrippushup": "reverse grip push ups",
+        "reverse push ups": "reverse push ups",
+        "reverse push-ups": "reverse push ups",
+        "reverse push up": "reverse push ups",
+        "reverse push-up": "reverse push ups",
+        "reverse pushup": "reverse push ups",
+        "reversepushup": "reverse push ups",
+        "reversepushups": "reverse push ups",
+        "bench dips": "reverse push ups",
+        "benchdips": "reverse push ups",
+        "hanging leg raises": "hanging leg raises",
+        "hanging leg raise": "hanging leg raises",
+        "hanging leg-raises": "hanging leg raises",
+        "hanging-leg-raises": "hanging leg raises",
+        "hanginglegraises": "hanging leg raises",
+        "hanging-leg-raise": "hanging leg raises",
+        "hanginglegraise": "hanging leg raises",
+        "leg raises": "hanging leg raises",
+        "leg raise": "hanging leg raises",
+
+        // Pistol Squats
+        "pistol squat": "pistol squats",
+        "pistol squats": "pistol squats",
+        "pistolsquat": "pistol squats",
+
+        // Side Plank
+        "side plank": "side plank",
+        "side planks": "side plank",
+        "side-plank": "side plank",
+        "side-planks": "side plank",
+        "sideplank": "side plank",
+        "russian twists": "russian twists",
+        "russian twist": "russian twists",
+        "russian-twists": "russian twists",
+        "russiantwists": "russian twists",
+        "russiantwist": "russian twists",
+        "russian-twist": "russian twists",
+
+        // Pull Ups
+        "pull up": "pull ups",
+        "pull-ups": "pull ups",
+        "pullups": "pull ups",
+        "pullup": "pull ups",
+        "pull ups": "pull ups",
+        "dumbbell chest fly": "dumbbell chest fly",
+        "dumbbell chest-fly": "dumbbell chest fly",
+        "dumbbell chestfly": "dumbbell chest fly",
+        "dumbbellchestfly": "dumbbell chest fly",
+        "cable chest fly": "cable chest fly",
+        "cable fly": "cable chest fly",
+        "cable chestfly": "cable chest fly",
+        "cable chest-fly": "cable chest fly",
+        "cablechestfly": "cable chest fly",
+        "chest fly": "cable chest fly",
+        "chest-fly": "cable chest fly",
+        "chestfly": "cable chest fly",
+        "chin up": "chin up",
+        "chin-up": "chin up",
+        "chin ups": "chin up",
+        "chin-ups": "chin up",
+        "chinup": "chin up",
+        "chinups": "chin up",
+        "assisted pull ups": "assisted pull ups",
+        "assisted pull-ups": "assisted pull ups",
+        "assisted pull up": "assisted pull ups",
+        "assisted pull-up": "assisted pull ups",
+        "assisted pullups": "assisted pull ups",
+        "assistedpullups": "assisted pull ups",
+        "assistedpullup": "assisted pull ups",
+        "band pull ups": "assisted pull ups",
+        "band pull up": "assisted pull ups",
+        "band pull-ups": "assisted pull ups",
+        "band pull-up": "assisted pull ups",
+        "bandpullups": "assisted pull ups",
+        "bandpullup": "assisted pull ups",
+        "straight-arm pulldown": "straight-arm pulldown",
+        "straight arm pulldown": "straight-arm pulldown",
+        "straightarm pulldown": "straight-arm pulldown",
+        "straightarmpulldown": "straight-arm pulldown",
+        "straight-arm lat pulldown": "straight-arm pulldown",
+        "straight arm lat pulldown": "straight-arm pulldown",
+        "standing straight-arm lat pulldown": "straight-arm pulldown",
+        "standing straight arm lat pulldown": "straight-arm pulldown",
+        "standing straight-arm
