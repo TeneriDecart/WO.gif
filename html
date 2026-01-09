@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,18 +7,22 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    background-color: #d0f0ff;
-    color: #000;
+    background-color: #d0f0ff; /* світло-блакитний фон */
+    color: #000; /* чорні написи */
     max-width: 900px;
     margin: 30px auto;
     padding: 20px;
   }
 
   h1 {
-    color: orange;
+    color: orange; /* Uniwell помаранчевий */
     font-size: 40px;
     text-align: center;
     margin-bottom: 5px;
+  }
+
+  h3 {
+    margin-top: 30px;
   }
 
   p.description {
@@ -41,7 +46,7 @@
     padding: 12px 25px;
     font-size: 18px;
     cursor: pointer;
-    background-color: #ff9900;
+    background-color: #ff9900; /* помаранчевий */
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -49,16 +54,6 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
-    transition: background-color 0.3s;
-  }
-
-  button:hover {
-    background-color: #e68a00;
-  }
-
-  button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
   }
 
   .exercise-block {
@@ -75,73 +70,6 @@
     display: block;
     margin-top: 10px;
     border-radius: 8px;
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
-
-  img.loaded {
-    opacity: 1;
-  }
-
-  /* Індикатор завантаження */
-  .loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.9);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-
-  .loading-spinner {
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #ff9900;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  .loading-text {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 18px;
-    color: #333;
-  }
-
-  .progress-bar {
-    width: 300px;
-    height: 20px;
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    margin-top: 20px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background-color: #4CAF50;
-    width: 0%;
-    transition: width 0.3s;
-  }
-
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   }
 </style>
 </head>
@@ -154,22 +82,11 @@
 <br>
 <button id="generateBtn">Generate GIF plan</button>
 
-<!-- Індикатор завантаження -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-container">
-    <div class="loading-spinner"></div>
-    <div class="loading-text" id="loadingText">Завантаження GIF...</div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-    <div id="progressText" style="margin-top: 10px; color: #666;">0%</div>
-  </div>
-</div>
-
 <h3>Результат:</h3>
 <div id="output"></div>
 
 <script>
+
 // Локальна база для складних/унікальних вправ
 var gifDatabase = {
     "goblet squat": "https://www.inspireusafoundation.org/file/2023/08/kettlebell-goblet-squat-muscles.gif",
@@ -192,7 +109,7 @@ var gifDatabase = {
     "dumbbell bicep curls": "https://www.inspireusafoundation.org/file/2022/03/dumbbell-bicep-curl.gif",
     "bench dips": "https://www.inspireusafoundation.org/file/2024/01/bench-dip.gif",
     "reverse grip push ups": "https://www.inspireusafoundation.org/file/2023/04/reverse-grip-push-ups.gif",
-    "bench press": "https://www.inspireusafoundation.org/file/2022/05/barbell-pause-bench.gif",
+    "bench press": "https://www.inspireusafoundation.org/file/2022/05/barbell-pause-bench.gif", //бенч прес тут ------
     "wall crunches": "https://www.inspireusafoundation.org/file/2023/08/wall-crunch.gif",
     "elbow-to-nee crunches": "https://www.inspireusafoundation.org/file/2023/08/elbow-to-knee-sit-up-movement.gif",
     "lying leg raises": "https://www.inspireusafoundation.org/file/2022/06/lying-leg-raise.gif",
@@ -207,6 +124,7 @@ var gifDatabase = {
     "knee push ups": "https://www.inspireusafoundation.org/file/2023/04/knee-push-ups.gif",
     "wide push ups": "https://www.inspireusafoundation.org/file/2022/11/wide-arm-push-ups.gif",
     "narrow push ups": "https://www.inspireusafoundation.org/file/2021/08/diamond-pushup.gif",
+    "dumbbell bicep curls": "https://www.inspireusafoundation.org/file/2022/03/dumbbell-bicep-curl.gif",
     "alternate heel touches": "https://www.inspireusafoundation.org/file/2022/12/alternate-heel-touchers.gif",
     "barbell row": "https://www.inspireusafoundation.org/file/2022/08/barbell-bent-over-row.gif",
     "lat pulldown": "https://www.inspireusafoundation.org/file/2022/08/wide-grip-lat-pulldown.gif",
@@ -528,4 +446,564 @@ function normalizeExercise(name) {
         "straight arm lat pulldown": "straight-arm pulldown",
         "standing straight-arm lat pulldown": "straight-arm pulldown",
         "standing straight arm lat pulldown": "straight-arm pulldown",
-        "standing straight-arm
+        "standing straight-arm pulldown": "straight-arm pulldown",
+        "standing straight arm pulldown": "straight-arm pulldown",
+
+        // Plank
+        "plank": "plank",
+        "planks": "plank",
+        "forearm plank": "plank",
+        "forearm-plank": "plank",
+        "forearmplank": "plank",
+        "bird dog": "bird dog",
+        "bird-dog": "bird dog",
+        "flutter kicks": "flutter kicks",
+        "flutter-kicks": "flutter kicks",
+        "lying flutter kicks": "flutter kicks",
+        "side crunch": "side crunch",
+        "side crunches": "side crunch",
+        "side-crunch": "side crunch",
+        "side-crunches": "side crunch",
+        "lying side crunch": "side crunch",
+        "oblique crunch": "side crunch",
+        "oblique crunches": "side crunch",
+        "woodchoppers": "woodchoppers",
+        "wood choppers": "woodchoppers",
+        "woodchopper": "woodchoppers",
+        "wood chop": "woodchoppers",
+        "wood chops": "woodchoppers",
+        "woodchop": "woodchoppers",
+        "standing oblique crunch": "standing oblique crunch",
+        "standing oblique crunches": "standing oblique crunch",
+        "standing side crunch": "standing oblique crunch",
+        "standing side crunches": "standing oblique crunch",
+        "standing side oblique crunch": "standing oblique crunch",
+        "standing side oblique crunches": "standing oblique crunch",
+        "wall sit": "wall sit",
+        "wall sits": "wall sit",
+        "wall-sit": "wall sit",
+        "wall-sits": "wall sit",
+        "wall sit hold": "wall sit",
+        "static wall sit": "wall sit",
+
+        // Lunges
+        "lunge": "lunges",
+        "lunges": "lunges",
+        "forward lunge": "lunges",
+        "forward lunges": "lunges",
+        "forwardlunge": "lunges",
+        "reverse lunge": "reverse lunge",
+        "reverse lunges": "reverse lunge",
+        "reverse-lunge": "reverse lunge",
+        "reverse-lunges": "reverse lunge",
+        "reverselunge": "reverse lunge",
+        "reverselunges": "reverse lunge",
+        "step-back lunges": "reverse lunge",
+        "revers lunge": "reverse lunge",
+        "walking lunge": "walking lunge",
+        "walking lunges": "walking lunge",
+        "walking-lunge": "walking lunge",
+        "walking-lunges": "walking lunge",
+        "walkinglunge": "walking lunge",
+        "walkinglunges": "walking lunge",
+        "curtsy lunge": "curtsy lunge",
+        "curtsy lunges": "curtsy lunge",
+        "curtsy-lunge": "curtsy lunge",
+        "curtsy-lunges": "curtsy lunge",
+        "curtsylunge": "curtsy lunge",
+        "curtsylunges": "curtsy lunge",
+        "lateral lunge": "lateral lunge",
+        "lateral lunges": "lateral lunge",
+        "lateral-lunge": "lateral lunge",
+        "lateral-lunges": "lateral lunge",
+        "laterallunge": "lateral lunge",
+        "laterallunges": "lateral lunge",
+        "side lunge": "lateral lunge",
+        "side lunges": "lateral lunge",
+        "side-lunge": "lateral lunge",
+        "side-lunges": "lateral lunge",
+        "sidelunge": "lateral lunge",
+        "sidelunges": "lateral lunge",
+        "static lunge": "static lunge",
+        "static lunges": "static lunge",
+        "static-lunge": "static lunge",
+        "static-lunges": "static lunge",
+        "staticlunge": "static lunge",
+        "staticlunges": "static lunge",
+
+        // Dips
+        "dip": "dips",
+        "dips": "dips",
+        "parallel bar dips": "dips",
+        "tricep dips": "dips",
+        "tricepdip": "dips",
+        "overhead triceps extension": "overhead triceps extension",
+        "single arm overhead triceps extension": "overhead triceps extension",
+        "one-arm overhead triceps extension": "overhead triceps extension",
+        "single-arm overhead triceps extension": "overhead triceps extension",
+        "one arm overhead triceps extension": "overhead triceps extension",
+        "overhead-triceps-extension": "overhead triceps extension",
+        "overheadtricepsextension": "overhead triceps extension",
+        "dumbbell overhead triceps extension": "overhead triceps extension",
+        "triceps kickback": "triceps kickback",
+        "triceps kickbacks": "triceps kickback",
+        "single arm triceps kickback": "triceps kickback",
+        "single-arm triceps kickback": "triceps kickback",
+        "one arm triceps kickback": "triceps kickback",
+        "one-arm triceps kickback": "triceps kickback",
+        "dumbbell triceps kickback": "triceps kickback",
+        "skull crushers": "skull crushers",
+        "skull crusher": "skull crushers",
+        "barbell skull crushers": "skull crushers",
+        "lying triceps extension skull crushers": "skull crushers",
+        "lying triceps extension": "skull crushers",
+        "weighted dips": "weighted dips",
+        "dips with weight": "weighted dips",
+        "dips weighted": "weighted dips",
+        "weighted parallel bar dips": "weighted dips",
+        "weighted triceps dips": "weighted dips",
+        "weighted dip": "weighted dips",
+        "dips + weight": "weighted dips",
+        "loaded dips": "weighted dips",
+        "added-weight dips": "weighted dips",
+
+        // Mountain Climbers
+        "mountain climber": "mountain climbers",
+        "mountain climbers": "mountain climbers",
+        "mountain-climber": "mountain climbers",
+        "mountain-climbers": "mountain climbers",
+        "mountainclimber": "mountain climbers",
+
+        // Bicycle Crunches
+        "bicycle crunch": "bicycle crunches",
+        "bicycle crunches": "bicycle crunches",
+        "bicycle-crunch": "bicycle crunches",
+        "bicycle-crunches": "bicycle crunches",
+        "bicyclecrunch": "bicycle crunches",
+        "bicyclecrunches": "bicycle crunches",
+
+        // Burpees
+        "burpee": "burpees",
+        "burpees": "burpees",
+
+        // Dumbbell Rows
+        "bent-over dumbbell row": "bent-over dumbbell rows",
+        "bent-over dumbbell rows": "bent-over dumbbell rows",
+        "bent over dumbbell row": "bent-over dumbbell rows",
+        "bent over dumbbell rows": "bent-over dumbbell rows",
+        "bentoverdumbbellrow": "bent-over dumbbell rows",
+        "barbell row": "barbell row",
+        "barbell rows": "barbell row",
+        "barbellrow": "barbell row",
+        "inverted row": "inverted row",
+        "inverted rows": "inverted row",
+        "invertedrow": "inverted row",
+        "seated row": "seated row",
+        "seated rows": "seated row",
+        "seatedrow": "seated row",
+        "seated cable row": "seated row",
+        "lat pulldown": "lat pulldown",
+        "lat pulldowns": "lat pulldown",
+        "latpulldown": "lat pulldown",
+
+        // Dumbbell Exercises
+        "dumbbell upright row": "dumbbell upright rows",
+        "dumbbell upright rows": "dumbbell upright rows",
+        "dumbbelluprightrow": "dumbbell upright rows",
+        "dumbbell shrug": "dumbbell shrugs",
+        "dumbbell shrugs": "dumbbell shrugs",
+        "dumbbellshrug": "dumbbell shrugs",
+        "dumbbell bicep curl": "dumbbell bicep curls",
+        "dumbbell bicep curls": "dumbbell bicep curls",
+        "dumbbellbicepcurl": "dumbbell bicep curls",
+        "dumbbell curl": "dumbbell bicep curls",
+        "dumbbell curls": "dumbbell bicep curls",
+        "hammer curl": "hammer curl",
+        "hammer curls": "hammer curl",
+        "dumbbell hammer curl": "hammer curl",
+        "dumbbellpullover": "dumbbell pullovers",
+        "dumbbell pullover": "dumbbell pullovers",
+        "dumbbell pullovers": "dumbbell pullovers",
+        "dumbbell romanian deadlift": "dumbbell romanian deadlift",
+        "dumbbell-romanian-deadlift": "dumbbell romanian deadlift",
+        "dumbbellromaniandeadlift": "dumbbell romanian deadlift",
+        "dumbbell deadlift": "dumbbell deadlift",
+        "dumbbell-deadlift": "dumbbell deadlift",
+        "dumbbelldeadlift": "dumbbell deadlift",
+        "single-arm dumbbell row": "single-arm dumbbell row",
+        "single-arm dumbbell rows": "single-arm dumbbell row",
+        "single arm dumbbell row": "single-arm dumbbell row",
+        "single arm dumbbell rows": "single-arm dumbbell row",
+        "single-arm dumbbellrow": "single-arm dumbbell row",
+        "single-arm-dumbbell-row": "single-arm dumbbell row",
+        "single-arm-dumbbellrow": "single-arm dumbbell row",
+        "singlearmdumbbellrow": "single-arm dumbbell row",
+        "singlearmdumbbellrows": "single-arm dumbbell row",
+        "single-arm-dumbbell-rows": "single-arm dumbbell row",
+        "one arm dumbbell row": "single-arm dumbbell row",
+        "one arm dumbbell rows": "single-arm dumbbell row",
+        "one-arm dumbbell row": "single-arm dumbbell row",
+        "one-arm dumbbell rows": "single-arm dumbbell row",
+        "band row": "band row",
+        "row with band": "band row",
+        "resistance band row": "band row",
+        "standing band row": "band row",
+        "banded row": "band row",
+        "resistance band rows": "band row",
+        "row band": "band row",
+        "dumbbell bent-over row": "dumbbell bent-over row",
+        "bent-over dumbbell row": "dumbbell bent-over row",
+        "bent over dumbbell row": "dumbbell bent-over row",
+        "dumbbell bent over row": "dumbbell bent-over row",
+        "dumbbell bent over rows": "dumbbell bent-over row",
+        "bent-over dumbbell rows": "dumbbell bent-over row",
+
+        // Bench Press
+        "bench press": "bench press",
+        "benchpress": "bench press",
+        "incline bench press": "incline bench press",
+        "incline barbell bench press": "incline bench press",
+        "military press": "incline bench press",
+        "dumbbell bench press": "dumbbell bench press",
+        "dumbbellbenchpress": "dumbbell bench press",
+        "decline barbell bench press": "decline barbell bench press",
+        "decline bench press": "decline barbell bench press",
+        "decline barbell press": "decline barbell bench press",
+        "barbell decline bench press": "decline barbell bench press",
+        "barbell decline press": "decline barbell bench press",
+        "decline press": "decline barbell bench press",
+        "bench press – decline": "decline barbell bench press",
+        "decline bench": "decline barbell bench press",
+        "decline press": "decline barbell bench press",
+
+        // Wall / Core Exercises
+        "wall crunch": "wall crunches",
+        "wall crunches": "wall crunches",
+        "elbow-to-knee crunch": "elbow-to-nee crunches",
+        "elbow-to-knee crunches": "elbow-to-nee crunches",
+        "lying leg raise": "lying leg raises",
+        "lying leg raises": "lying leg raises",
+        "hollow hold": "hollow hold",
+        "alternate heel touches": "alternate heel touches",
+        "alternate heel toucher": "alternate heel touches",
+        "heel taps": "alternate heel touches",
+        "heel tap": "alternate heel touches",
+        "toe taps": "alternate heel touches",
+        "toe tap": "alternate heel touches",
+        "reverse crunch": "reverse crunch",
+        "reverse crunches": "reverse crunch",
+        "reverse-crunch": "reverse crunch",
+        "reverse-crunches": "reverse crunch",
+        "reverse ab crunch": "reverse crunch",
+        "reverse-ab crunch": "reverse crunch",
+        "reverse ab crunches": "reverse crunch",
+        "reverse-ab crunches": "reverse crunch",
+        "lying reverse crunch": "reverse crunch",
+        "crunches": "crunches",
+        "crunche": "crunches",
+
+        // Hip / Glute
+        "hip thrust": "hip thrust",
+        "hipthrust": "hip thrust",
+        "hip-thrust": "hip thrust",
+        "glute bridge": "hip thrust",
+        "glute bridge on the bench": "hip thrust",
+        "glute bridges": "hip thrust",
+        "glutebridge": "hip thrust",
+        "glute-bridge": "hip thrust",
+        "single-leg hip thrust": "single-leg hip thrust",
+        "single leg hip thrust": "single-leg hip thrust",
+        "single leg glute bridge": "single-leg hip thrust",
+        "single leg glute bridges": "single-leg hip thrust",
+        "single leg glutebridge": "single-leg hip thrust",
+        "single leg glute-bridge": "single-leg hip thrust",
+        "singlelegglutebridge": "single-leg hip thrust",
+        "singleleghipthrust": "single-leg hip thrust",
+        "kettlebell swing": "kettlebell swing",
+        "kettlebell swings": "kettlebell swing",
+        "kettlebell-swing": "kettlebell swing",
+        "kettlebell-swings": "kettlebell swing",
+        "kettlebellswings": "kettlebell swing",
+        "kettlebellswing": "kettlebell swing",
+
+        // біцепс
+        "concentration curl": "concentration curl",
+        "concentration curls": "concentration curl",
+        "concentration-curl": "concentration curl",
+        "concentrationcurl": "concentration curl",
+        "concentrationcurls": "concentration curl",
+        "preacher curl": "preacher curl",
+        "preacher curls": "preacher curl",
+        "preacher-curl": "preacher curl",
+        "preacher-curls": "preacher curl",
+        "preachercurl": "preacher curl",
+        "preachercurls": "preacher curl",
+        "barbell preacher curl": "preacher curl",
+        "alternating dumbbell curl": "alternating dumbbell curl",
+        "alternating dumbbell curls": "alternating dumbbell curl",
+        "alternating curl": "alternating dumbbell curl",
+        "alternating curls": "alternating dumbbell curl",
+        "standing alternating dumbbell curl": "alternating dumbbell curl",
+        "standing alternating dumbbell curls": "alternating dumbbell curl",
+        "standing alternating curl": "alternating dumbbell curl",
+        "standing alternating curls": "alternating dumbbell curl",
+        "barbell curl": "barbell curl",
+        "barbell biceps curl": "barbell curl",
+        "standing barbell curl": "barbell curl",
+        "barbell arm curl": "barbell curl",
+        "barbell curls": "barbell curl",
+        "ez-bar curl": "barbell curl",
+        "biceps barbell curl": "barbell curl",
+        "curl with barbell": "barbell curl",
+        "incline dumbbell curl": "incline dumbbell curl",
+        "incline dumbbell biceps curl": "incline dumbbell curl",
+        "incline bench dumbbell curl": "incline dumbbell curl",
+        "incline dumbbell curl on bench": "incline dumbbell curl",
+        "incline dumbbell curl": "incline dumbbell curl",
+        "incline dumbbell arm curl": "incline dumbbell curl",
+        "dumbbell incline curl": "incline dumbbell curl",
+        "biceps incline dumbbell curl": "incline dumbbell curl",
+        "incline curl with dumbbells": "incline dumbbell curl",
+        "incline dumbbell curls": "incline dumbbell curl",
+
+        // Deadlifts
+        "deadlift": "deadlift",
+        "romanian deadlift": "romanian deadlift",
+        "dumbbell romanian deadlift": "dumbbell romanian deadlift",
+
+        // Back Extension
+        "back extension": "back extension",
+
+        //плечі
+        "shoulder press": "shoulder press",
+        "shoulder-press": "shoulder press",
+        "shoulderpress": "shoulder press",
+        "seated shoulder press": "shoulder press",
+        "seated-shoulder-press": "shoulder press",
+        "barbell shoulder press": "shoulder press",
+        "seated barbell shoulder press": "shoulder press",
+        "seated dumbbell shoulder press": "seated dumbbell shoulder press",
+        "seated dumbbell shoulder-press": "seated dumbbell shoulder press",
+        "seated dumbbell shoulderpress": "seated dumbbell shoulder press",
+        "seateddumbbellshoulderpress": "seated dumbbell shoulder press",
+        "seated-dumbbell-shoulder-press": "seated dumbbell shoulder press",
+        "dumbbell shoulder press": "seated dumbbell shoulder press",
+        "dumbbell shoulder-press": "seated dumbbell shoulder press",
+        "dumbbell-shoulder-press": "seated dumbbell shoulder press",
+        "dumbbellshoulderpress": "seated dumbbell shoulder press",
+        "standing dumbbell shoulder press": "standing dumbbell shoulder press",
+        "standing dumbbell overhead press": "standing dumbbell shoulder press",
+        "standing dumbbell press": "standing dumbbell shoulder press",
+        "standing dumbbell military press": "standing dumbbell shoulder press",
+        "standing dumbbell shoulder overhead press": "standing dumbbell shoulder press",
+        "shoulder press with dumbbells": "standing dumbbell shoulder press",
+        "overhead press": "overhead press",
+        "overhead-press": "overhead press",
+        "overheadpress": "overhead press",
+        "arnold press": "arnold press",
+        "arnold shoulder press": "arnold press",
+        "arnold-press": "arnold press",
+        "arnoldpress": "arnold press",
+        "shoulder arnold press": "arnold press",
+        "front raise": "front raise",
+        "front-raise": "front raise",
+        "frontraise": "front raise",
+        "shoulder front raise": "front raise",
+        "front raises": "front raise",
+        "shoulder front raises": "front raise",
+        "rear delt fly": "rear delt fly",
+        "rear delt-fly": "rear delt fly",
+        "rear-delt-fly": "rear delt fly",
+        "reardeltfly": "rear delt fly",
+        "seated rear delt fly": "rear delt fly",
+        "dumbbell rear delt fly": "rear delt fly",
+        "upright row": "upright row",
+        "upright-row": "upright row",
+        "upright rows": "upright row",
+        "upright-rows": "upright row",
+        "up right row": "upright row",
+        "up right rows": "upright row",
+        "uprightrow": "upright row",
+
+        // Front Squat / Leg
+        "front squat": "front squat",
+        "frontsquat": "front squat",
+        "box squat": "box squats",
+        "box squats": "box squats",
+        "boxsquat": "box squats",
+        "leg press": "leg press",
+        "legpress": "leg press",
+        "leg extension": "leg extension",
+        "legextension": "leg extension",
+        "barbell squat": "barbell squats",
+        "barbell squats": "barbell squats",
+        "barbellsquat": "barbell squats",
+        "back squat": "barbell squats",
+        "back squats": "barbell squats",
+        "back-squat": "barbell squats",
+        "back-squats": "barbell squats",
+        "backsquats": "barbell squats",
+        "backsquat": "barbell squats",
+        "face pulls": "face pulls",
+        "face-pulls": "face pulls",
+        "face pull": "face pulls",
+        "face-pull": "face pulls",
+        "facepulls": "face pulls",
+        "facepull": "face pulls",
+        "bodyweight squat": "squat",
+        "bodyweight squats": "squat",
+        "bodyweight-squat": "squat",
+        "bodyweight-squats": "squat",
+        "bodyweightsquat": "squat",
+        "bodyweightsquats": "squat",
+        "jump squat": "jump squat",
+        "jump squats": "jump squat",
+        "jump-squat": "jump squat",
+        "jump-squats": "jump squat",
+        "jumpsquat": "jump squat",
+        "jumpsquats": "jump squat",
+        "pulse squat": "pulse squat",
+        "pulse squats": "pulse squat",
+        "pulse-squat": "pulse squat",
+        "pulse-squats": "pulse squat",
+        "pulsesquats": "pulse squat",
+        "pulsesquat": "pulse squat",
+        "leg curl": "leg curl",
+        "leg-curl": "leg curl",
+        "legcurl": "leg curl",
+        "nordic hamstring curl": "nordic hamstring curl",
+        "nordic-hamstring-curl": "nordic hamstring curl",
+        "nordic hamstringcurl": "nordic hamstring curl",
+        "nordichamstringcurl": "nordic hamstring curl",
+        "band squat": "band squat",
+        "squat with band": "band squat",
+        "resistance band squat": "band squat",
+        "banded squat": "band squat",
+        "squat band": "band squat",
+        "squat with resistance band": "band squat",
+        "resistance band squats": "band squat",
+        "banded bodyweight squat": "band squat",
+
+        "rope pushdowns": "rope pushdowns",
+        "rope pushdown": "rope pushdowns",
+        "triceps rope pushdowns": "rope pushdowns",
+        "rope triceps pushdowns": "rope pushdowns",
+        "cable rope pushdowns": "rope pushdowns",
+        "rope pushdowns on cable": "rope pushdowns",
+        "rope cable pushdowns": "rope pushdowns",
+        "rope push-downs": "rope pushdowns",
+        "rope push downs": "rope pushdowns",
+        "rope triceps pushdowns": "rope pushdowns",
+        "band pull-apart": "band pull-apart",
+        "pull-apart with band": "band pull-apart",
+        "resistance band pull-apart": "band pull-apart",
+        "standing band pull-apart": "band pull-apart",
+        "banded pull-apart": "band pull-apart",
+        "pull-apart band": "band pull-apart",
+        "band glute kickback": "band glute kickback",
+        "glute kickback with band": "band glute kickback",
+        "resistance band glute kickback": "band glute kickback",
+        "standing band glute kickback": "band glute kickback",
+        "banded glute kickback": "band glute kickback",
+        "resistance band glute kickbacks": "band glute kickback",
+        "glute kickback band": "band glute kickback",
+        "resistance band seated row": "resistance band seated row",
+        "seated resistance band row": "resistance band seated row",
+        "seated row with resistance band": "resistance band seated row",
+        "seated band row": "resistance band seated row",
+        "banded seated row": "resistance band seated row",
+        "standing side leg raises": "standing side leg raises",
+        "side leg raises": "standing side leg raises",
+        "side leg raise": "standing side leg raises",
+        "standing side leg raise": "standing side leg raises",
+        "standing side leg lift": "standing side leg raises",
+        "standing side leg lifts": "standing side leg raises",
+        "standing lateral leg raise": "standing side leg raises",
+        "standing lateral leg raises": "standing side leg raises",
+        "standing lateral leg lift": "standing side leg raises",
+        "standing lateral leg lifts": "standing side leg raises",
+        "standing-side-leg-raises": "standing side leg raises",
+        "standing-side-leg-raise": "standing side leg raises",
+        "hamstring stretch": "hamstring stretch",
+        "hamstring stretches": "hamstring stretch",
+        "seated hamstring stretch": "hamstring stretch",
+        "floor hamstring stretch": "hamstring stretch",
+        "quad stretch": "quad stretch",
+        "quadriceps stretch": "quad stretch",
+        "quadriceps stretches": "quad stretch",
+        "standing quad stretch": "quad stretch",
+        "standing heel-to-butt quad stretch": "quad stretch",
+        "runner’s quad stretch": "quad stretch",
+        "standing quadriceps stretch": "quad stretch",
+        "standing quadriceps stretchs": "quad stretch",
+        "hip flexor stretch": "hip flexor stretch",
+        "hip flexor stretches": "hip flexor stretch",
+        "kneeling hip flexor stretch": "hip flexor stretch",
+        "low lunge hip flexor stretch": "hip flexor stretch",
+        "stretch for the front of the hip": "hip flexor stretch",
+        "hip flexor lengthening": "hip flexor stretch",
+        "iliopsoas stretch": "hip flexor stretch",
+        "runner’s lunge stretch": "hip flexor stretch",
+        "kneeling lunge stretch": "hip flexor stretch",
+        "kettlebell clean": "kettlebell clean",
+        "kettlebell cleans": "kettlebell clean",
+        "kettlebell clean and jerk": "kettlebell clean",
+        "kettlebell clean & jerk": "kettlebell clean",
+        "kettlebell clean and jerks": "kettlebell clean",
+        "single-arm kettlebell clean and jerk": "kettlebell clean",
+        "kettlebell power clean and jerk": "kettlebell clean",
+        "kettlebell olympic clean and jerk": "kettlebell clean",
+        "kettlebell clean & jerks": "kettlebell clean",
+    };
+    return mapping[name] || name;
+}
+
+document.getElementById("generateBtn").onclick = function() {
+    const input = document.getElementById("inputText").value;
+    const lines = input.split("\n");
+    const outputDiv = document.getElementById("output");
+    outputDiv.innerHTML = "";
+
+    for (let line of lines) {
+        line = line.trim();
+        if (!line) continue;
+
+        const firstWord = line.split(/\s+/)[0].toLowerCase();
+        if (stopWords.includes(firstWord)) continue;
+
+        const block = document.createElement("div");
+        block.className = "exercise-block";
+
+        const textEl = document.createElement("div");
+        textEl.textContent = line;
+        block.appendChild(textEl);
+
+        let gifUrl = null;
+
+        const match = line.match(/[a-zA-Z][a-zA-Z\s\-()]+/);
+        if (match) {
+            const rawName = match[0].trim();
+            const normalizedName = normalizeExercise(rawName);
+
+            if (gifDatabase[normalizedName]) {
+                gifUrl = gifDatabase[normalizedName];
+            }
+        }
+
+        if (gifUrl) {
+            const img = document.createElement("img");
+            img.src = gifUrl;
+            block.appendChild(img);
+        } else {
+            const err = document.createElement("div");
+            err.textContent = "❌ GIF not found in local database";
+            block.appendChild(err);
+        }
+
+        outputDiv.appendChild(block);
+    }
+};
+</script>
+
+</body>
+</html>
