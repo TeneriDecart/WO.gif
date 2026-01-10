@@ -11,6 +11,7 @@
     max-width: 900px;
     margin: 30px auto;
     padding: 20px;
+    border-radius: 12px;
   }
 
   h1 {
@@ -135,6 +136,12 @@
 <script>
 // Локальна база для складних/унікальних вправ
 var gifDatabase = {
+
+  // дод вправи 10/01 (squat)
+    "band squat": "https://www.inspireusafoundation.org/wp-content/uploads/2022/10/resistance-band-squat.gif",
+    "sumo squat": "https://www.inspireusafoundation.org/file/2023/08/sumo-air-squat.gif"
+}
+  // ---
     "goblet squat": "https://www.inspireusafoundation.org/file/2023/08/kettlebell-goblet-squat-muscles.gif",
     "squat": "https://www.inspireusafoundation.org/file/2021/06/bodyweight-squat.gif",
     "bulgarian split squat": "https://www.inspireusafoundation.org/file/2022/03/bulgarian-split-spuat.gif",
@@ -444,7 +451,7 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
 
 <!-- ПРОСТА ФОРМА ДЛЯ NETLIFY (ТІЛЬКИ ВІДГУК) -->
 <div style="max-width: 500px; margin: 50px auto 30px; padding: 25px; background: white; border-radius: 12px; border: 2px solid #ff9900; box-shadow: 0 3px 10px rgba(255, 153, 0, 0.1);">
-    <h3 style="color: #ff9900; text-align: center; margin-bottom: 15px;">Допомога проєкту</h3>
+    <h3 style="color: #ff9900; text-align: center; margin-bottom: 15px;">Покращення проєкту</h3>
     
     <!-- Форма Netlify - тільки відгук -->
     <form name="feedback" method="POST" data-netlify="true" netlify-honeypot="bot-field">
@@ -461,7 +468,7 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
             <label style="display: block; margin-bottom: 8px; color: #333; font-weight: bold;">Вправи без гіф:</label>
             <textarea name="message" required rows="4"
                       style="width: 95%; max-height: 50px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical;"
-                      placeholder="Залиш тут назви вправ без гіф..."></textarea>
+                      placeholder="Залиш тут назви вправ без гіф і ми це додамо асап..."></textarea>
         </div>
         
         <!-- Кнопка -->
