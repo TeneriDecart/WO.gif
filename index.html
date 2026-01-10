@@ -441,11 +441,114 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
     }
 }
 </script>
-<div style="text-align: center; margin-top: 30px; padding: 15px; color: #666; font-size: 14px; border-top: 1px solid #ddd;">
-    Original author - Roman Kharchenko<br>
-    Modifier - Oleksii Nechyporenko
+
+<!-- ФОРМА ДЛЯ ВІДГУКІВ З NETLIFY -->
+<div style="max-width: 500px; margin: 50px auto 30px; padding: 25px; background: white; border-radius: 12px; border: 2px solid #ff9900; box-shadow: 0 3px 10px rgba(255, 153, 0, 0.1);">
+    <h3 style="color: #ff9900; text-align: center; margin-bottom: 15px;">💭 Залишити відгук</h3>
+    
+    <form name="feedback" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <!-- Приховане поле для захисту від спаму (Netlify) -->
+        <div style="display: none;">
+            <label>Не заповнюйте це поле: <input name="bot-field"></label>
+        </div>
+        
+        <!-- Приховане поле для імені форми (для Netlify) -->
+        <input type="hidden" name="form-name" value="feedback">
+        
+        <!-- Відгук -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; color: #333; font-weight: bold;">Ваш відгук: <span style="color: red;">*</span></label>
+            <textarea name="message" placeholder="тут залишити вправу на яку немає гіф, ми це виправимо асап" required rows="5"
+                      style="width: 95%; max-height: 50px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical;"></textarea>
+        </div>
+        
+        <!-- Кнопка -->
+        <button type="submit" 
+                style="width: 100%; padding: 14px; background: #ff9900; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s;">
+            Надіслати
+        </button>
+        <p style="text-align: center; font-size: 12px; color: #999; margin-top: 15px;">
+            Відгук надійде на email адміністратора
+        </p>
+    </form>
+    
+    <!-- Статусне повідомлення -->
+    <div id="feedback-status" style="display: none; margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; font-size: 14px;"></div>
+</div>
+
+<!-- JavaScript для форми відгуків -->
+<script>
+// Обробка форми відгуків
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[name="feedback"]');
+    const statusDiv = document.getElementById('feedback-status');
+    
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Перевірка обов'язкового поля
+            const messageField = form.querySelector('textarea[name="message"]');
+            if (!messageField.value.trim()) {
+                showStatus('❌ Будь ласка, введіть ваш відгук', '#ffebee', '#c62828');
+                messageField.focus();
+                return;
+            }
+            
+            const button = form.querySelector('button[type="submit"]');
+            const originalText = button.textContent;
+            button.textContent = 'Надсилаємо...';
+            button.disabled = true;
+            
+            try {
+                // Відправка форми через Netlify
+                const formData = new FormData(form);
+                const response = await fetch('/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+                
+                if (response.ok) {
+                    showStatus('✅ Дякуємо! Ваш відгук успішно надіслано.', '#e8f5e9', '#2e7d32');
+                    form.reset();
+                    
+                    // Можна додати перенаправлення на сторінку подяки
+                    // window.location.href = '/thank-you.html';
+                } else {
+                    showStatus('❌ Помилка відправки. Спробуйте ще раз.', '#ffebee', '#c62828');
+                }
+            } catch (error) {
+                console.error('Помилка форми:', error);
+                showStatus('❌ Мережева помилка. Спробуйте ще раз.', '#ffebee', '#c62828');
+            } finally {
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        });
+    }
+    
+    function showStatus(message, bgColor, textColor) {
+        statusDiv.textContent = message;
+        statusDiv.style.backgroundColor = bgColor;
+        statusDiv.style.color = textColor;
+        statusDiv.style.display = 'block';
+        statusDiv.style.border = '1px solid ' + textColor;
+        
+        // Автоматично сховати через 5 секунд
+        setTimeout(() => {
+            statusDiv.style.display = 'none';
+        }, 5000);
+    }
+});
+</script>
+
+<div style="text-align: center; margin-top: 30px; padding: 10px; color: #666; font-size: 14px; border-top: 1px solid #ddd;">
+    Original author - Roman Kharchenko | Modifier - Oleksii Nechyporenko<br>
+Special thanks to the testers - 
 </div>
 </body>
 </html>
-
-
