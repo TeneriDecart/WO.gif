@@ -442,58 +442,49 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
 }
 </script>
 
-<!-- ФОРМА ДЛЯ ВІДГУКІВ З NETLIFY -->
+<!-- ПРОСТА ФОРМА ДЛЯ NETLIFY (ТІЛЬКИ ВІДГУК) -->
 <div style="max-width: 500px; margin: 50px auto 30px; padding: 25px; background: white; border-radius: 12px; border: 2px solid #ff9900; box-shadow: 0 3px 10px rgba(255, 153, 0, 0.1);">
-    <h3 style="color: #ff9900; text-align: center; margin-bottom: 15px;">💭 Залишити відгук</h3>
+    <h3 style="color: #ff9900; text-align: center; margin-bottom: 15px;">Допомога проєкту</h3>
     
+    <!-- Форма Netlify - тільки відгук -->
     <form name="feedback" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-        <!-- Приховане поле для захисту від спаму (Netlify) -->
+        <!-- Приховане поле для захисту від спаму -->
         <div style="display: none;">
             <label>Не заповнюйте це поле: <input name="bot-field"></label>
         </div>
         
-        <!-- Приховане поле для імені форми (для Netlify) -->
+        <!-- Приховане поле для імені форми -->
         <input type="hidden" name="form-name" value="feedback">
         
-        <!-- Відгук -->
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 5px; color: #333; font-weight: bold;">Ваш відгук: <span style="color: red;">*</span></label>
-            <textarea name="message" placeholder="тут залишити вправу на яку немає гіф, ми це виправимо асап" required rows="5"
-                      style="width: 95%; max-height: 50px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical;"></textarea>
+        <!-- Тільки поле для відгуку -->
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: bold;">Вправи без гіф:</label>
+            <textarea name="message" required rows="4"
+                      style="width: 95%; max-height: 50px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical;"
+                      placeholder="Залиш тут назви вправ без гіф..."></textarea>
         </div>
         
         <!-- Кнопка -->
         <button type="submit" 
-                style="width: 100%; padding: 14px; background: #ff9900; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s;">
+                style="width: 100%; padding: 14px; background: #ff9900; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer;">
             Надіслати
         </button>
-        <p style="text-align: center; font-size: 12px; color: #999; margin-top: 15px;">
-            Відгук надійде на email адміністратора
-        </p>
     </form>
     
     <!-- Статусне повідомлення -->
-    <div id="feedback-status" style="display: none; margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; font-size: 14px;"></div>
+    <div id="form-status" style="display: none; margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; font-size: 14px;"></div>
 </div>
 
-<!-- JavaScript для форми відгуків -->
+<!-- JavaScript для форми -->
 <script>
-// Обробка форми відгуків
+// Обробка форми
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form[name="feedback"]');
-    const statusDiv = document.getElementById('feedback-status');
+    const statusDiv = document.getElementById('form-status');
     
     if (form) {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            // Перевірка обов'язкового поля
-            const messageField = form.querySelector('textarea[name="message"]');
-            if (!messageField.value.trim()) {
-                showStatus('❌ Будь ласка, введіть ваш відгук', '#ffebee', '#c62828');
-                messageField.focus();
-                return;
-            }
             
             const button = form.querySelector('button[type="submit"]');
             const originalText = button.textContent;
@@ -501,28 +492,19 @@ document.addEventListener('DOMContentLoaded', function() {
             button.disabled = true;
             
             try {
-                // Відправка форми через Netlify
                 const formData = new FormData(form);
                 const response = await fetch('/', {
                     method: 'POST',
-                    body: formData,
-                    headers: { 
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
+                    body: formData
                 });
                 
                 if (response.ok) {
-                    showStatus('✅ Дякуємо! Ваш відгук успішно надіслано.', '#e8f5e9', '#2e7d32');
+                    showStatus('✅ Дякуємо!', '#e8f5e9', '#2e7d32');
                     form.reset();
-                    
-                    // Можна додати перенаправлення на сторінку подяки
-                    // window.location.href = '/thank-you.html';
                 } else {
-                    showStatus('❌ Помилка відправки. Спробуйте ще раз.', '#ffebee', '#c62828');
+                    showStatus('❌ Помилка. Спробуйте ще раз.', '#ffebee', '#c62828');
                 }
             } catch (error) {
-                console.error('Помилка форми:', error);
                 showStatus('❌ Мережева помилка. Спробуйте ще раз.', '#ffebee', '#c62828');
             } finally {
                 button.textContent = originalText;
@@ -536,12 +518,10 @@ document.addEventListener('DOMContentLoaded', function() {
         statusDiv.style.backgroundColor = bgColor;
         statusDiv.style.color = textColor;
         statusDiv.style.display = 'block';
-        statusDiv.style.border = '1px solid ' + textColor;
         
-        // Автоматично сховати через 5 секунд
         setTimeout(() => {
             statusDiv.style.display = 'none';
-        }, 5000);
+        }, 4000);
     }
 });
 </script>
