@@ -4,16 +4,22 @@
 <meta charset="UTF-8">
 <title>Uniwell Workout GIF Generator</title>
 <style>
+  html {
+    background-color: #181A1B;
+  }
   body {
+    border-color: #181A1B;
     font-family: Arial, sans-serif;
-    background-color: #d0f0ff;
+    background-color: #00364F;
     color: #000;
     max-width: 900px;
     margin: 30px auto;
     padding: 20px;
     border-radius: 12px;
   }
-
+  h3 {
+      color:#C8C3BC
+  }
   h1 {
     color: orange;
     font-size: 40px;
@@ -24,7 +30,7 @@
   p.description {
     text-align: center;
     font-size: 16px;
-    color: #333;
+    color: #C8C3BC;
     margin-bottom: 20px;
   }
 
@@ -34,8 +40,9 @@
     padding: 12px;
     font-size: 16px;
     border-radius: 10px;
-    border: 1px solid #aaa;
+    border: 1px solid #3A3E41
     resize: vertical;
+    background-color: #3B3B3B;
   }
 
   button {
@@ -115,8 +122,7 @@
 </head>
 <body>
 
-<h1>Uniwell</h1>
-<p class="description">Ця програмка генерує план тренування з GIF-демонстраціями вправ. Просто введіть свій список вправ нижче і натисніть "Generate GIF plan".</p>
+<p class="description">Ця програмка генерує план тренування з GIF-демонстраціями вправ. Просто введіть свій список вправ нижче і натисни "Generate GIF plan"</p>
 
 <textarea id="inputText" placeholder="Наприклад: Day 1 - Archer push ups – 3x8&#10;2. Pull ups – 3x8"></textarea>
 <br>
@@ -136,12 +142,7 @@
 <script>
 // Локальна база для складних/унікальних вправ
 var gifDatabase = {
-
-  // дод вправи 10/01 (squat)
-    "band squat": "https://www.inspireusafoundation.org/wp-content/uploads/2022/10/resistance-band-squat.gif",
-    "sumo squat": "https://www.inspireusafoundation.org/file/2023/08/sumo-air-squat.gif"
-}
-  // ---
+  
     "goblet squat": "https://www.inspireusafoundation.org/file/2023/08/kettlebell-goblet-squat-muscles.gif",
     "squat": "https://www.inspireusafoundation.org/file/2021/06/bodyweight-squat.gif",
     "bulgarian split squat": "https://www.inspireusafoundation.org/file/2022/03/bulgarian-split-spuat.gif",
@@ -450,7 +451,7 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
 </script>
 
 <!-- ПРОСТА ФОРМА ДЛЯ NETLIFY (ТІЛЬКИ ВІДГУК) -->
-<div style="max-width: 500px; margin: 50px auto 30px; padding: 25px; background: white; border-radius: 12px; border: 2px solid #ff9900; box-shadow: 0 3px 10px rgba(255, 153, 0, 0.1);">
+<div style="max-width: 500px; margin: 50px auto 30px; padding: 25px; background: #181A1B; border-radius: 12px; border: 2px solid #ff9900; box-shadow: 0 3px 10px rgba(255, 153, 0, 0.1);">
     <h3 style="color: #ff9900; text-align: center; margin-bottom: 15px;">Покращення проєкту</h3>
     
     <!-- Форма Netlify - тільки відгук -->
@@ -467,7 +468,7 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
         <div style="margin-bottom: 25px;">
             <label style="display: block; margin-bottom: 8px; color: #333; font-weight: bold;">Вправи без гіф:</label>
             <textarea name="message" required rows="4"
-                      style="width: 95%; max-height: 50px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical;"
+                      style="width: 95%; max-height: 50px; padding: 12px; border: 1px solid #3A3E41; border-radius: 6px; font-size: 14px; resize: vertical;"
                       placeholder="Залиш тут назви вправ без гіф і ми це додамо асап..."></textarea>
         </div>
         
