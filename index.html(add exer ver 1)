@@ -2,6 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+    <circle cx='50' cy='50' r='50' fill='%23002B3F'/>
+    <circle cx='35' cy='40' r='8' fill='white'/>
+    <circle cx='65' cy='40' r='8' fill='white'/>
+    <circle cx='35' cy='40' r='4' fill='black'/>
+    <circle cx='65' cy='40' r='4' fill='black'/>
+    <path d='M30 60 Q50 80 70 60' stroke='black' stroke-width='5' fill='transparent'/>
+  </svg>">
+
 <title>Workout GIF Generator</title>
 <style>
   html {
@@ -40,12 +49,12 @@
     padding: 12px;
     font-size: 16px;
     border-radius: 10px;
-    border: 1px solid #3A3E41;
+    border: 1px solid #1f1f1f;
     resize: vertical;
-    background-color: #3B3B3B;
+    background-color: #272727;
+    color: #C8C3BC 
   }
 
-  /* Радужна кнопка стилі */
   .rainbow-btn {
     position: relative;
     padding: 20px 50px;
@@ -176,7 +185,7 @@
     }
   }
 
-  /* Версія для мобільних пристроїв */
+
   @media (max-width: 768px) {
     .rainbow-btn {
       padding: 15px 35px;
@@ -184,7 +193,6 @@
     }
   }
 
-  /* Додатковий ефект іскринок */
   .sparkle {
     position: absolute;
     width: 10px;
@@ -264,7 +272,7 @@
 
 <textarea id="inputText" placeholder="Наприклад: Day 1 - Archer push ups – 3x8&#10;2. Pull ups – 3x8"></textarea>
 <br>
-<!-- Радужна кнопка замість оригінальної -->
+
 <button class="rainbow-btn" id="generateBtn">
   <span>Generate GIF plan</span>
 </button>
@@ -281,10 +289,9 @@
 <div id="output"></div>
 
 <script>
-// Локальна база для складних/унікальних вправ
+// Базова база даних
 var gifDatabase = {
-  
-    "goblet squat": "https://www.inspireusafoundation.org/file/2023/08/kettlebell-goblet-squat-muscles.gif",
+   "goblet squat": "https://www.inspireusafoundation.org/file/2023/08/kettlebell-goblet-squat-muscles.gif",
     "squat": "https://www.inspireusafoundation.org/file/2021/06/bodyweight-squat.gif",
     "bulgarian split squat": "https://www.inspireusafoundation.org/file/2022/03/bulgarian-split-spuat.gif",
     "archer push ups": "https://www.inspireusafoundation.org/file/2022/08/archer-push-up.gif",
@@ -304,7 +311,7 @@ var gifDatabase = {
     "dumbbell bicep curls": "https://www.inspireusafoundation.org/file/2022/03/dumbbell-bicep-curl.gif",
     "bench dips": "https://www.inspireusafoundation.org/file/2024/01/bench-dip.gif",
     "reverse grip push ups": "https://www.inspireusafoundation.org/file/2023/04/reverse-grip-push-ups.gif",
-    "bench press": "https://www.inspireusafoundation.org/file/2022/05/barbell-pause-bench.gif",
+    "bench press": "https://www.inspireusafoundation.org/file/2022/05/barbell-pause-bench.gif", 
     "wall crunches": "https://www.inspireusafoundation.org/file/2023/08/wall-crunch.gif",
     "elbow-to-nee crunches": "https://www.inspireusafoundation.org/file/2023/08/elbow-to-knee-sit-up-movement.gif",
     "lying leg raises": "https://www.inspireusafoundation.org/file/2022/06/lying-leg-raise.gif",
@@ -319,6 +326,7 @@ var gifDatabase = {
     "knee push ups": "https://www.inspireusafoundation.org/file/2023/04/knee-push-ups.gif",
     "wide push ups": "https://www.inspireusafoundation.org/file/2022/11/wide-arm-push-ups.gif",
     "narrow push ups": "https://www.inspireusafoundation.org/file/2021/08/diamond-pushup.gif",
+    "dumbbell bicep curls": "https://www.inspireusafoundation.org/file/2022/03/dumbbell-bicep-curl.gif",
     "alternate heel touches": "https://www.inspireusafoundation.org/file/2022/12/alternate-heel-touchers.gif",
     "barbell row": "https://www.inspireusafoundation.org/file/2022/08/barbell-bent-over-row.gif",
     "lat pulldown": "https://www.inspireusafoundation.org/file/2022/08/wide-grip-lat-pulldown.gif",
@@ -407,8 +415,132 @@ var gifDatabase = {
     "kettlebell clean": "https://homeworkouts.org/wp-content/uploads/anim-kettlebell-one-arm-clean-and-jerk.gif",
 };
 
-// Стоп-слова на початку рядка
-const stopWords = ["day","rest","workout","upper","lower","full","optional","cool","down","stretch","monday","tuesday","wednesday","thursday","friday","saturday","sunday", "arms", "calves", "core", "conditioning", "shoulders", "triceps", "back", "biceps"];
+// Ключ для зберігання в localStorage
+const STORAGE_KEY = 'workout_gif_database';
+
+// Завантаження додаткових вправ з localStorage
+function loadCustomDatabase() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const customDb = JSON.parse(saved);
+            // Об'єднуємо з базовою базою
+            Object.assign(gifDatabase, customDb);
+            console.log(`Завантажено ${Object.keys(customDb).length} додаткових вправ`);
+        }
+    } catch (e) {
+        console.error('Помилка завантаження з localStorage:', e);
+    }
+}
+
+// Збереження нової вправи
+function saveCustomExercise(exerciseName, gifUrl) {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        let customDb = saved ? JSON.parse(saved) : {};
+        
+        // Додаємо нову вправу
+        customDb[exerciseName.toLowerCase()] = gifUrl;
+        
+        // Зберігаємо
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(customDb));
+        
+        // Оновлюємо поточну базу
+        gifDatabase[exerciseName.toLowerCase()] = gifUrl;
+        
+        return true;
+    } catch (e) {
+        console.error('Помилка збереження:', e);
+        return false;
+    }
+}
+
+// Отримання всіх кастомних вправ
+function getCustomExercises() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+// Експорт бази даних
+function exportDatabase() {
+    const allExercises = {
+        base: gifDatabase,
+        custom: getCustomExercises()
+    };
+    
+    const dataStr = JSON.stringify(allExercises, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `workout-gif-database-${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+}
+
+// Імпорт бази даних
+function importDatabase(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            
+            // Обробляємо імпортовані дані
+            if (importedData.custom) {
+                // Зберігаємо кастомні вправи
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData.custom));
+                // Оновлюємо поточну базу
+                Object.assign(gifDatabase, importedData.custom);
+            }
+            
+            if (importedData.base) {
+                // Оновлюємо базову базу (опціонально)
+                Object.assign(gifDatabase, importedData.base);
+            }
+            
+            alert(`Успішно імпортовано базу даних!`);
+            showCustomExercises(); // Оновлюємо список
+        } catch (error) {
+            alert('Помилка при імпорті файлу. Перевірте формат.');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// Відображення кастомних вправ
+function showCustomExercises() {
+    const custom = getCustomExercises();
+    const container = document.getElementById('customExercisesList');
+    if (!container) return;
+    
+    if (Object.keys(custom).length === 0) {
+        container.innerHTML = '<div style="color: #666; text-align: center;">Немає додаткових вправ</div>';
+        return;
+    }
+    
+    let html = '<div style="margin-bottom: 15px; font-weight: bold;">Ваші додаткові вправи:</div>';
+    html += '<div style="max-height: 200px; overflow-y: auto; background: #2a2a2a; padding: 10px; border-radius: 5px;">';
+    
+    for (const [name, url] of Object.entries(custom)) {
+        html += `
+            <div style="margin-bottom: 8px; padding: 5px; background: #3a3a3a; border-radius: 3px;">
+                <strong>${name}</strong><br>
+                <small style="color: #888; word-break: break-all;">${url}</small>
+            </div>
+        `;
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
 
 // Функція нормалізації назв вправ
 function normalizeExercise(name) {
@@ -421,81 +553,42 @@ function normalizeExercise(name) {
         "pushups": "push ups",
         "pull ups": "pull ups",
         "pull-ups": "pull ups",
-        "pullups": "pull ups",
-        "plank": "plank",
-        "lunges": "lunges",
-        "dips": "dips",
-        "bench press": "bench press",
-        "deadlift": "deadlift",
-        // ... інші мапінги
+        "pullups": "pull ups"
     };
     return mapping[name] || name;
 }
 
-// Додаємо ефект іскринок для радужної кнопки
-function addSparkleEffect(button, e) {
-    for(let i = 0; i < 10; i++) {
-        const sparkle = document.createElement('div');
-        sparkle.className = 'sparkle';
-        
-        const size = Math.random() * 10 + 5;
-        sparkle.style.width = `${size}px`;
-        sparkle.style.height = `${size}px`;
-        
-        // Випадковий колір веселки
-        const rainbowColors = [
-            '#ff0000', '#ff9900', '#ffff00', 
-            '#00ff00', '#0099ff', '#6633ff', '#ff00ff'
-        ];
-        sparkle.style.background = rainbowColors[Math.floor(Math.random() * rainbowColors.length)];
-        
-        // Випадкова позиція навколо кнопки
-        const x = e.offsetX + Math.random() * 40 - 20;
-        const y = e.offsetY + Math.random() * 40 - 20;
-        sparkle.style.left = `${x}px`;
-        sparkle.style.top = `${y}px`;
-        
-        button.appendChild(sparkle);
-        
-        // Видаляємо іскринку після анімації
-        setTimeout(() => {
-            sparkle.remove();
-        }, 600);
-    }
-}
+// Стоп-слова
+const stopWords = ["day","rest","workout","upper","lower","full","optional","cool","down","stretch","monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
 
-// Оригінальна функція для генерації плану
+// Завантажуємо кастомні вправи при старті
+loadCustomDatabase();
+
+// Оновлена головна функція
 document.getElementById("generateBtn").onclick = function(e) {
     const input = document.getElementById("inputText").value;
     const lines = input.split("\n");
     const outputDiv = document.getElementById("output");
     
-    // Очистити результат
     outputDiv.innerHTML = "";
     
-    // Показати індикатор завантаження
     const loadingOverlay = document.getElementById("loadingOverlay");
     const loadingText = document.getElementById("loadingText");
     loadingText.textContent = "Обробка вправ...";
     loadingOverlay.style.display = "flex";
     
-    // Вимкнути кнопку під час завантаження
     const generateBtn = document.getElementById("generateBtn");
     generateBtn.disabled = true;
     
-    // Додати ефект іскринок
-    addSparkleEffect(generateBtn, e);
-    
-    // Додати невелику затримку для плавності
     setTimeout(() => {
         processExercises(lines, outputDiv, loadingOverlay, generateBtn);
     }, 100);
 };
 
 function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
-    const exercisesWithGifs = [];
+    let foundExercises = 0;
+    let notFoundExercises = 0;
     
-    // Перший прохід: знайти всі GIF
     for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
         if (!line) continue;
@@ -503,128 +596,112 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
         const firstWord = line.split(/\s+/)[0].toLowerCase();
         if (stopWords.includes(firstWord)) continue;
 
-        let gifUrl = null;
         const match = line.match(/[a-zA-Z][a-zA-Z\s\-()]+/);
-        if (match) {
-            const rawName = match[0].trim();
-            const normalizedName = normalizeExercise(rawName);
+        if (!match) continue;
 
-            if (gifDatabase[normalizedName]) {
-                gifUrl = gifDatabase[normalizedName];
-            }
-        }
-
-        exercisesWithGifs.push({
-            text: line,
-            gifUrl: gifUrl,
-            loaded: false
-        });
+        const rawName = match[0].trim();
+        const normalizedName = normalizeExercise(rawName);
         
-        // Оновити текст завантаження
-        document.getElementById("loadingText").textContent = `Знайдено ${exercisesWithGifs.length} вправ...`;
-    }
-    
-    if (exercisesWithGifs.length === 0) {
-        // Немає вправ для обробки
-        loadingOverlay.style.display = "none";
-        generateBtn.disabled = false;
-        return;
-    }
-    
-    document.getElementById("loadingText").textContent = `Завантаження 0 з ${exercisesWithGifs.length} GIF...`;
-    
-    let loadedCount = 0;
-    
-    // Другий прохід: створюємо блоки та завантажуємо GIF
-    exercisesWithGifs.forEach((exercise, index) => {
         const block = document.createElement("div");
         block.className = "exercise-block";
 
         const textEl = document.createElement("div");
-        textEl.textContent = exercise.text;
+        textEl.textContent = line;
         block.appendChild(textEl);
 
-        if (exercise.gifUrl) {
-            const img = document.createElement("img");
-            img.style.opacity = "0.3"; // Початкова прозорість
-            img.src = exercise.gifUrl;
-            
-            // Додати обробник завантаження
-            img.onload = function() {
-                loadedCount++;
-                img.style.opacity = "1";
-                img.style.transition = "opacity 0.5s";
-                document.getElementById("loadingText").textContent = 
-                    `Завантажено ${loadedCount} з ${exercisesWithGifs.length} GIF...`;
-                
-                if (loadedCount === exercisesWithGifs.length) {
-                    // Усі GIF завантажено
-                    setTimeout(() => {
-                        loadingOverlay.style.display = "none";
-                        generateBtn.disabled = false;
-                    }, 500);
+        // Шукаємо вправу в базі
+        let foundGif = null;
+        let foundKey = null;
+        
+        // Пошук точного співпадіння
+        if (gifDatabase[normalizedName]) {
+            foundGif = gifDatabase[normalizedName];
+            foundKey = normalizedName;
+        } else {
+            // Пошук часткового співпадіння
+            for (const [key, url] of Object.entries(gifDatabase)) {
+                if (normalizedName.includes(key) || key.includes(normalizedName)) {
+                    foundGif = url;
+                    foundKey = key;
+                    break;
                 }
-            };
-            
-            // Обробник помилки
+            }
+        }
+
+        if (foundGif) {
+            foundExercises++;
+            const img = document.createElement("img");
+            img.src = foundGif;
+            img.alt = foundKey;
             img.onerror = function() {
-                loadedCount++;
+                this.style.display = 'none';
                 const errorDiv = document.createElement("div");
-                errorDiv.textContent = "❌ Не вдалося завантажити GIF";
+                errorDiv.textContent = "❌ GIF не завантажився";
                 errorDiv.style.color = "red";
                 block.appendChild(errorDiv);
-                
-                document.getElementById("loadingText").textContent = 
-                    `Завантажено ${loadedCount} з ${exercisesWithGifs.length} GIF...`;
-                
-                if (loadedCount === exercisesWithGifs.length) {
-                    setTimeout(() => {
-                        loadingOverlay.style.display = "none";
-                        generateBtn.disabled = false;
-                    }, 500);
+            };
+            block.appendChild(img);
+        } else {
+            notFoundExercises++;
+            const err = document.createElement("div");
+            err.textContent = "❌ Вправи немає в базі даних";
+            err.style.color = "#ff6666";
+            
+            // Кнопка для додавання цієї вправи
+            const addBtn = document.createElement("button");
+            addBtn.textContent = "➕ Додати цю вправу";
+            addBtn.style.cssText = `
+                margin-left: 10px;
+                padding: 3px 8px;
+                background: #555;
+                color: white;
+                border: none;
+                border-radius: 3px;
+                cursor: pointer;
+                font-size: 12px;
+            `;
+            addBtn.onclick = function() {
+                const url = prompt(`Введіть URL GIF для вправи "${rawName}":`);
+                if (url && url.trim()) {
+                    if (saveCustomExercise(rawName.toLowerCase(), url.trim())) {
+                        err.textContent = "✅ Вправу додано! Оновіть сторінку.";
+                        addBtn.style.display = 'none';
+                    }
                 }
             };
             
-            block.appendChild(img);
-        } else {
-            loadedCount++;
-            const err = document.createElement("div");
-            err.textContent = "❌ GIF not found in local database";
-            err.style.color = "#ff6666";
+            err.appendChild(addBtn);
             block.appendChild(err);
-            
-            document.getElementById("loadingText").textContent = 
-                `Завантажено ${loadedCount} з ${exercisesWithGifs.length} GIF...`;
-            
-            if (loadedCount === exercisesWithGifs.length) {
-                setTimeout(() => {
-                    loadingOverlay.style.display = "none";
-                    generateBtn.disabled = false;
-                }, 500);
-            }
         }
         
         outputDiv.appendChild(block);
-        
-        // Якщо це остання вправа без GIF, перевірити чи всі вже оброблені
-        if (!exercise.gifUrl && index === exercisesWithGifs.length - 1) {
-            if (loadedCount === exercisesWithGifs.length) {
-                setTimeout(() => {
-                    loadingOverlay.style.display = "none";
-                    generateBtn.disabled = false;
-                }, 500);
-            }
-        }
-    });
-    
-    // Якщо всі вправи без GIF (швидкий випадок)
-    if (loadedCount === exercisesWithGifs.length) {
-        setTimeout(() => {
-            loadingOverlay.style.display = "none";
-            generateBtn.disabled = false;
-        }, 500);
     }
+    
+    // Статистика
+    const stats = document.createElement("div");
+    stats.style.cssText = `
+        margin-top: 20px;
+        padding: 10px;
+        background: #2a2a2a;
+        border-radius: 5px;
+        font-size: 14px;
+    `;
+    stats.innerHTML = `
+        <strong>Результати:</strong><br>
+        ✅ Знайдено вправ: ${foundExercises}<br>
+        ❌ Не знайдено: ${notFoundExercises}<br>
+        📊 Загалом оброблено: ${foundExercises + notFoundExercises}
+    `;
+    outputDiv.appendChild(stats);
+    
+    loadingOverlay.style.display = "none";
+    generateBtn.disabled = false;
 }
+
+// Ініціалізація при завантаженні сторінки
+document.addEventListener('DOMContentLoaded', function() {
+    showCustomExercises();
+});
 </script>
 
 <!-- ПРОСТА ФОРМА ДЛЯ NETLIFY (ТІЛЬКИ ВІДГУК) -->
