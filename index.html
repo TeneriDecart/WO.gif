@@ -11,7 +11,7 @@
     border-color: #181A1B;
     font-family: Arial, sans-serif;
     background-color: #00364F;
-    color: #000;
+    color: #C8C3BC;
     max-width: 900px;
     margin: 30px auto;
     padding: 20px;
@@ -40,37 +40,175 @@
     padding: 12px;
     font-size: 16px;
     border-radius: 10px;
-    border: 1px solid #3A3E41
+    border: 1px solid #3A3E41;
     resize: vertical;
     background-color: #3B3B3B;
   }
 
-  button {
-    padding: 12px 25px;
-    font-size: 18px;
-    cursor: pointer;
-    background-color: #CC7A00;
-    color: #474747;
+  /* Радужна кнопка стилі */
+  .rainbow-btn {
+    position: relative;
+    padding: 20px 50px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: transparent;
     border: none;
-    border-radius: 10px;
-    margin-top: 10px;
+    border-radius: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin: 20px auto;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-    transition: background-color 0.3s;
   }
 
-  button:hover {
-    background-color: #e68a00;
-  }
-
-  button:disabled {
-    background-color: #cccccc;
+  .rainbow-btn:disabled {
+    opacity: 0.6;
     cursor: not-allowed;
   }
 
+  .rainbow-btn:disabled::before {
+    animation: none;
+  }
+
+  .rainbow-btn:disabled span {
+    animation: none;
+    -webkit-text-fill-color: #999;
+  }
+
+  .rainbow-btn::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(
+      45deg,
+      #ff0000,
+      #ff9900,
+      #ffff00,
+      #00ff00,
+      #0099ff,
+      #6633ff,
+      #ff00ff,
+      #ff0000
+    );
+    background-size: 400% 400%;
+    border-radius: 60px;
+    z-index: -1;
+    animation: rainbow-gradient 3s linear infinite;
+    filter: blur(5px);
+  }
+
+  .rainbow-btn::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    background: #1a1a2e;
+    border-radius: 48px;
+    z-index: -1;
+    transition: background 0.3s ease;
+  }
+
+  .rainbow-btn:hover:not(:disabled)::after {
+    background: rgba(26, 26, 46, 0.9);
+  }
+
+  .rainbow-btn:hover:not(:disabled) {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    letter-spacing: 3px;
+  }
+
+  .rainbow-btn:active:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .rainbow-btn span {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(
+      45deg,
+      #ff0000,
+      #ff9900,
+      #ffff00,
+      #00ff00,
+      #0099ff,
+      #6633ff,
+      #ff00ff
+    );
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-text 3s linear infinite;
+  }
+
+  @keyframes rainbow-gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes rainbow-text {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Версія для мобільних пристроїв */
+  @media (max-width: 768px) {
+    .rainbow-btn {
+      padding: 15px 35px;
+      font-size: 1.2rem;
+    }
+  }
+
+  /* Додатковий ефект іскринок */
+  .sparkle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    animation: sparkle 0.6s linear;
+  }
+
+  @keyframes sparkle {
+    0% {
+      transform: scale(0) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(180deg);
+      opacity: 0;
+    }
+  }
+
   .exercise-block {
-    background: #ffffff;
+    background: #3B3B3B;
     padding: 15px;
     margin-top: 15px;
     border-radius: 12px;
@@ -126,7 +264,10 @@
 
 <textarea id="inputText" placeholder="Наприклад: Day 1 - Archer push ups – 3x8&#10;2. Pull ups – 3x8"></textarea>
 <br>
-<button id="generateBtn">Generate GIF plan</button>
+<!-- Радужна кнопка замість оригінальної -->
+<button class="rainbow-btn" id="generateBtn">
+  <span>Generate GIF plan</span>
+</button>
 
 <!-- Індикатор завантаження -->
 <div class="loading-overlay" id="loadingOverlay">
@@ -291,7 +432,40 @@ function normalizeExercise(name) {
     return mapping[name] || name;
 }
 
-document.getElementById("generateBtn").onclick = function() {
+// Додаємо ефект іскринок для радужної кнопки
+function addSparkleEffect(button, e) {
+    for(let i = 0; i < 10; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        
+        const size = Math.random() * 10 + 5;
+        sparkle.style.width = `${size}px`;
+        sparkle.style.height = `${size}px`;
+        
+        // Випадковий колір веселки
+        const rainbowColors = [
+            '#ff0000', '#ff9900', '#ffff00', 
+            '#00ff00', '#0099ff', '#6633ff', '#ff00ff'
+        ];
+        sparkle.style.background = rainbowColors[Math.floor(Math.random() * rainbowColors.length)];
+        
+        // Випадкова позиція навколо кнопки
+        const x = e.offsetX + Math.random() * 40 - 20;
+        const y = e.offsetY + Math.random() * 40 - 20;
+        sparkle.style.left = `${x}px`;
+        sparkle.style.top = `${y}px`;
+        
+        button.appendChild(sparkle);
+        
+        // Видаляємо іскринку після анімації
+        setTimeout(() => {
+            sparkle.remove();
+        }, 600);
+    }
+}
+
+// Оригінальна функція для генерації плану
+document.getElementById("generateBtn").onclick = function(e) {
     const input = document.getElementById("inputText").value;
     const lines = input.split("\n");
     const outputDiv = document.getElementById("output");
@@ -308,6 +482,9 @@ document.getElementById("generateBtn").onclick = function() {
     // Вимкнути кнопку під час завантаження
     const generateBtn = document.getElementById("generateBtn");
     generateBtn.disabled = true;
+    
+    // Додати ефект іскринок
+    addSparkleEffect(generateBtn, e);
     
     // Додати невелику затримку для плавності
     setTimeout(() => {
@@ -536,7 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div style="text-align: center; margin-top: 30px; padding: 10px; color: #666; font-size: 14px; border-top: 1px solid #474747;">
     Original author - Roman Kharchenko | Modifier - Oleksii Nechyporenko<br>
-Special thanks to the testers - 
+Special thanks to Lesia Movchan
 </div>
 </body>
 </html>
