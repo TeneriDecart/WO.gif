@@ -605,6 +605,7 @@ var gifDatabase = {
     "hamstring stretch": "https://i.postimg.cc/jjwvj6K6/Hamstring-Stretch.gif",
     "quad stretch": "https://i.postimg.cc/gr9bMydv/Quadriceps-Stretch-(Standing).gif",
     "hip flexor stretch": "https://i.postimg.cc/XvgF4xz6/10531101-Kneeling-Hip-Flexor-Stretch-Hips-small.png",
+    "jumping jack": "https://www.inspireusafoundation.org/file/2021/08/jumping-jacks.gif",
     "kettlebell clean": "https://homeworkouts.org/wp-content/uploads/anim-kettlebell-one-arm-clean-and-jerk.gif"
 };
 
@@ -778,17 +779,6 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
 
         if (exerciseName) {
             // Знайшли назву вправи
-            const exerciseInfo = document.createElement("div");
-            exerciseInfo.style.cssText = `
-                font-size: 12px;
-                color: #4CAF50;
-                margin-top: 5px;
-                font-style: italic;
-            `;
-            exerciseInfo.textContent = `📌 Розпізнано вправу: ${exerciseName}`;
-            block.appendChild(exerciseInfo);
-
-            // Перевіряємо чи є GIF для цієї вправи
             if (gifDatabase[exerciseName]) {
                 foundCount++;
                 block.classList.add("found-exercise");
@@ -804,18 +794,6 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
                     block.appendChild(errorDiv);
                 };
                 block.appendChild(img);
-                
-                // Інформація про ключові слова (якщо є в базі вправ)
-                if (exerciseDatabase[exerciseName]) {
-                    const keywordsInfo = document.createElement("div");
-                    keywordsInfo.style.cssText = `
-                        font-size: 11px;
-                        color: #888;
-                        margin-top: 5px;
-                    `;
-                    keywordsInfo.textContent = `🏷️ Ключові слова: ${exerciseDatabase[exerciseName].join(', ')}`;
-                    block.appendChild(keywordsInfo);
-                }
             } else {
                 notFoundCount++;
                 block.classList.add("not-found-exercise");
@@ -871,7 +849,7 @@ function processExercises(lines, outputDiv, loadingOverlay, generateBtn) {
     <h3 style="color: #ff9900; text-align: center; margin-bottom: 15px;">Покращення проєкту</h3>
     
     <!-- Форма Netlify - тільки відгук -->
-    <form name="feedback" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+    <form method='POST' name='feedback'>
         <!-- Приховане поле для захисту від спаму -->
         <div style="display: none;">
             <label>Не заповнюйте це поле: <input name="bot-field"></label>
@@ -951,9 +929,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <div style="text-align: center; margin-top: 30px; padding: 10px; color: #666; font-size: 14px; border-top: 1px solid #474747;">
-    Original author - Roman Kharchenko | Modifier - Oleksii Nechyporenko<br>
-Special thanks to Lesia Movchan
+    Original author - Roman Kharchenko | Modifier - Oleksii Nechyporenko<br>Tester - Denys Khodak | Special thanks to Lesia Movchan
+
 </div>
 </body>
 </html>
-
